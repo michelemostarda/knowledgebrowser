@@ -33,7 +33,9 @@ import java.util.Map;
  *
  * @author Michele Mostarda (me@michelemostarda.it)
  */
-public class BenchmarkTest {
+public class WNBenchmarkTest {
+
+    private static final String data = "/Users/hardest/Downloads/hdt-data/wordnet31.hdt.gz";
 
     private static final String[] WN_CLAZZES = new String[] {
             "http://lemon-model.net/lemon#Component",
@@ -51,13 +53,12 @@ public class BenchmarkTest {
             "http://wordnet-rdf.princeton.edu/ontology#Synset=117774" +
             "}";
 
-    private static final Logger logger = Logger.getLogger(BenchmarkTest.class);
+    private static final Logger logger = Logger.getLogger(WNBenchmarkTest.class);
 
     private Benchmark benchmark;
 
     @Before
     public void setUp() throws IOException {
-        final String data = "/Users/hardest/Downloads/hdt-data/wordnet31.hdt.gz";
         benchmark = new Benchmark(data);
     }
 
