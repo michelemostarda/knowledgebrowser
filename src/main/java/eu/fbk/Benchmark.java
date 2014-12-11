@@ -59,6 +59,15 @@ public class Benchmark {
         getInstancesLowTripleId = new TripleID(0, RDF_ISA_ID, 0);
     }
 
+    public String toString(TripleID t) {
+        return  String.format(
+                "%s %s %s",
+                dictionary.idToString(t.getSubject(), TripleComponentRole.SUBJECT).toString(),
+                dictionary.idToString(t.getPredicate(), TripleComponentRole.PREDICATE).toString(),
+                dictionary.idToString(t.getObject(), TripleComponentRole.OBJECT).toString()
+        );
+    }
+
     public TripleID getPattern(String s, String p, String o) {
         return new TripleID(
                 dictionary.stringToId(s, TripleComponentRole.SUBJECT),
@@ -69,6 +78,16 @@ public class Benchmark {
 
     public IteratorTripleID getIterator(String s, String p, String o) {
         return triples.search(getPattern(s, p, o));
+    }
+
+    public int countStatementsLow() throws NotFoundException {
+        final IteratorTripleID iter = triples.search(new TripleID(0, 0, 0));
+        int counter = 0;
+        while (iter.hasNext()) {
+            iter.next();
+            counter++;
+        }
+        return counter;
     }
 
     public int countInstances() throws NotFoundException {
@@ -183,36 +202,52 @@ public class Benchmark {
     }
 
     public int joinIterators(IteratorTripleID l, TripleComponentRole lr,  IteratorTripleID r, TripleComponentRole rr) {
-        TripleID lTripleId;
-        TripleID rTripleId;
-        int lId;
-        int matched = 0;
-        StepBackIteratorTripleID sr = new StepBackIteratorTripleID(r);
-        while(l.hasNext()) {
-            lTripleId = l.next();
-            lId = getId(lTripleId, lr);
-            //r.goTo(lId);
-            goTo(sr, lId, rr);
-            if(sr.hasNext()) {
-                rTripleId = sr.next();
-                if(getId(rTripleId, rr) == lId) {
-                    matched++;
-                }
+        TripleID lCurr, rCurr;
+        int lTarget, rTarget;
+        int count = 0;
+        while (l.hasNext()) {
+            lCurr = l.next();
+            //System.out.println("LEFT: " + toString(lCurr));
+            lTarget = getId(lCurr, lr);
+            rCurr = goTo(r, rr, lTarget);
+            if(rCurr == null) continue;
+            rTarget = getId(rCurr, rr);
+            if (!lCurr.equals(rCurr) && lTarget == rTarget && compare(dictionary.idToString(lTarget,lr),(dictionary.idToString(rTarget,rr)))) {
+                // emit triple
+                //System.out.println("MATCH:" + toString(lCurr) + " WITH " + toString(rCurr));
+                count++;
+                //continue;
             }
+//            lCurr = goTo(l, lr, rTarget);
+//            if(lCurr == null) break;
+//            lTarget = getId(lCurr, lr);
+//            if (lTarget == rTarget) {
+//                // emit triple
+//                count++;
+//            }
         }
-        return matched;
+        return count;
     }
 
-    private static void goTo(StepBackIteratorTripleID i, int target, TripleComponentRole r) {
+    private boolean compare(CharSequence a, CharSequence b) {
+        if(a.length() != b.length()) return false;
+        for(int i = 0; i < a.length(); i++) {
+            if(a.charAt(i) != b.charAt(i)) return false;
+        }
+        return true;
+    }
+
+    private static TripleID goTo(IteratorTripleID i, TripleComponentRole r, int target) {
+        //if(r != TripleComponentRole.SUBJECT) i.goToStart();
+        i.goToStart();
         TripleID curr;
         while(i.hasNext()) {
             curr = i.next();
             if(getId(curr, r) >= target) {
-                //i.previous();
-                i.setBack(curr);
-                return;
+                return curr;
             }
         }
+        return null;
     }
 
     private static int getId(TripleID t, TripleComponentRole r) {
@@ -242,97 +277,26 @@ public class Benchmark {
         return out;
     }
 
-    static class StepBackIteratorTripleID implements IteratorTripleID {
-
-        private final IteratorTripleID decorated;
-        private TripleID back;
-
-        StepBackIteratorTripleID(IteratorTripleID decorated) {
-            this.decorated = decorated;
-        }
-
-        void setBack(TripleID b) {
-            back = b;
-        }
-
-        @Override
-        public boolean hasPrevious() {
-            return decorated.hasPrevious();
-        }
-
-        @Override
-        public TripleID previous() {
-            return decorated.previous();
-        }
-
-        @Override
-        public void goToStart() {
-            decorated.goToStart();
-        }
-
-        @Override
-        public boolean canGoTo() {
-            return decorated.canGoTo();
-        }
-
-        @Override
-        public void goTo(long pos) {
-            decorated.goTo(pos);
-        }
-
-        @Override
-        public long estimatedNumResults() {
-            return decorated.estimatedNumResults();
-        }
-
-        @Override
-        public ResultEstimationType numResultEstimation() {
-            return decorated.numResultEstimation() ;
-        }
-
-        @Override
-        public TripleComponentOrder getOrder() {
-            return decorated.getOrder();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return back != null || decorated.hasNext();
-        }
-
-        @Override
-        public TripleID next() {
-            if(back != null) {
-                TripleID o = back;
-                back = null;
-                return o;
-            } else {
-                return decorated.next();
-            }
-        }
-
-        @Override
-        public void remove() {
-            decorated.remove();
-        }
-    }
-
     public static class JoinIteratorTripleID implements IteratorTripleID {
 
+        private final Benchmark benchmark;
         private final IteratorTripleID l;
         private final TripleComponentRole lr;
-        private final StepBackIteratorTripleID sr;
+        private final IteratorTripleID r;
         private final TripleComponentRole rr;
 
         private TripleID match;
 
         public JoinIteratorTripleID(
+                Benchmark benchmark,
                 IteratorTripleID l, TripleComponentRole lr,
-                IteratorTripleID sr, TripleComponentRole rr
+                IteratorTripleID r, TripleComponentRole rr
         ) {
+            this.benchmark = benchmark;
             this.l = l;
             this.lr = lr;
-            this.sr = new StepBackIteratorTripleID(sr);
+            //this.sr = new StepBackIteratorTripleID(sr);
+            this.r = r;
             this.rr = rr;
         }
 
@@ -383,9 +347,10 @@ public class Benchmark {
             while(l.hasNext()) {
                 lTripleId = l.next();
                 lId = getId(lTripleId, lr);
-                Benchmark.goTo(sr, lId, rr);
-                if (sr.hasNext()) {
-                    rTripleId = sr.next();
+
+                r.goToStart();
+                while(r.hasNext()) {
+                    rTripleId = r.next();
                     if (getId(rTripleId, rr) == lId) {
                         match = rTripleId;
                         return true;

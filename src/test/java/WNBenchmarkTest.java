@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * // TODO: next: SemanticDogFood
- *
  * @author Michele Mostarda (me@michelemostarda.it)
  */
 public class WNBenchmarkTest {
@@ -64,6 +62,15 @@ public class WNBenchmarkTest {
 
     @After
     public void tearDown() {
+    }
+
+    @Test
+    public void testCountStatementsLow() throws IOException, NotFoundException {
+        final long start = System.currentTimeMillis();
+        final int c = benchmark.countStatementsLow();
+        final long end = System.currentTimeMillis();
+        logger.info("Time: " + (end - start));
+        Assert.assertEquals(5558748, c);
     }
 
     @Test
@@ -211,6 +218,7 @@ public class WNBenchmarkTest {
     public void testJoinIteratorsLow3() throws IOException {
         final long start = System.currentTimeMillis();
         final Benchmark.JoinIteratorTripleID iter = new Benchmark.JoinIteratorTripleID(
+                benchmark,
                 benchmark.getIterator("", Benchmark.RDF_ISA,  WN_CLAZZES[4]),
                 TripleComponentRole.SUBJECT,
                 benchmark.getIterator("", "", ""),
@@ -219,6 +227,7 @@ public class WNBenchmarkTest {
         int counter = 0;
 
         final Benchmark.JoinIteratorTripleID iter2 = new Benchmark.JoinIteratorTripleID(
+                benchmark,
                 iter, TripleComponentRole.OBJECT,
                 benchmark.getIterator("", "", ""), TripleComponentRole.SUBJECT
         );
