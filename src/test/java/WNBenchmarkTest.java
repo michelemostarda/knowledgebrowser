@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.rdfhdt.hdt.enums.TripleComponentRole;
 import org.rdfhdt.hdt.exceptions.NotFoundException;
@@ -194,6 +195,7 @@ public class WNBenchmarkTest {
      * ?o ?p1 ?o1
      * @throws IOException
      */
+    @Ignore // TODO JoinIteratorTripleID must be completed
     @Test
     public void testJoinIteratorsLow2() throws IOException {
         final long start = System.currentTimeMillis();
@@ -201,7 +203,7 @@ public class WNBenchmarkTest {
                 benchmark.getIterator("", "", ""),
                 TripleComponentRole.OBJECT,
                 benchmark.getIterator("", "", ""),
-                TripleComponentRole.OBJECT
+                TripleComponentRole.SUBJECT
         );
         final long end = System.currentTimeMillis();
         logger.info("Time: " + (end - start));
@@ -214,6 +216,7 @@ public class WNBenchmarkTest {
      * ?o ?p1 ?o1
      * @throws IOException
      */
+    @Ignore // TODO JoinIteratorTripleID must be completed
     @Test
     public void testJoinIteratorsLow3() throws IOException {
         final long start = System.currentTimeMillis();
