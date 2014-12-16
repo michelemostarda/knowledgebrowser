@@ -66,6 +66,15 @@ public class WNBenchmarkTest {
     }
 
     @Test
+    public void testCountStatements() throws IOException, NotFoundException {
+        final long start = System.currentTimeMillis();
+        final int c = benchmark.countStatements();
+        final long end = System.currentTimeMillis();
+        logger.info("Time: " + (end - start));
+        Assert.assertEquals(5558748, c);
+    }
+
+    @Test
     public void testCountStatementsLow() throws IOException, NotFoundException {
         final long start = System.currentTimeMillis();
         final int c = benchmark.countStatementsLow();

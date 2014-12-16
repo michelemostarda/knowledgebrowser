@@ -80,6 +80,16 @@ public class Benchmark {
         return triples.search(getPattern(s, p, o));
     }
 
+    public int countStatements() throws NotFoundException {
+        final IteratorTripleString iter = hdt.search("", "", "");
+        int counter = 0;
+        while (iter.hasNext()) {
+            iter.next().toString();
+            counter++;
+        }
+        return counter;
+    }
+
     public int countStatementsLow() throws NotFoundException {
         final IteratorTripleID iter = triples.search(new TripleID(0, 0, 0));
         int counter = 0;
