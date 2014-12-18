@@ -61,7 +61,7 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
             generator.writeStartObject();
             for (String instance : instances) {
                 generator.writeFieldName(instance);
-                materialize(instance, properties, generator);
+                materialize(instance, 0, properties, generator);
             }
             generator.writeEndObject();
         } catch (Exception e) {
@@ -69,8 +69,12 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         }
     }
 
-    private void materialize(String instance, List<Property> properties, JsonGenerator generator) throws IOException {
+    private void materialize(String instance, int level, List<Property> properties, JsonGenerator generator) throws IOException {
         generator.writeStartObject();
+        if(level > 0) {
+            generator.writeFieldName("@instance");
+            generator.writeString(instance);
+        }
         for (String[] propertyValue : propertyValues(instance)) {
             String propertyName = propertyValue[0];
             generator.writeFieldName(propertyName + (properties.contains(propertyName) ? "__" : ""));
@@ -80,11 +84,10 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         if (properties.size() > 0) {
             Property nextJump = properties.get(0);
             List<String> adiacentInstances = adiacentInstances(instance, nextJump);
-            System.out.println("ADIACENT: " + adiacentInstances);
             generator.writeFieldName(nextJump.getPropertyURL());
             generator.writeStartArray();
-            for (String rightInstance : adiacentInstances) {
-                materialize(rightInstance, properties.subList(1, properties.size()), generator);
+            for (String adiacentInstance : adiacentInstances) {
+                materialize(adiacentInstance, level + 1, properties.subList(1, properties.size()), generator);
             }
             generator.writeEndArray();
         }
@@ -109,12 +112,11 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         final String qryStr = String.format(
                 "SELECT DISTINCT ?i (COUNT(?i) AS ?count) " +
                 (property.isRevert() ? "WHERE {?o <%s> ?i } " : "WHERE {?i <%s> ?o } ") +
-                "GROUP BY ?count ?i " +
-                "ORDER BY ?count " +
+                "GROUP BY ?i " +
+                "ORDER BY DESC(?count) " +
                 "LIMIT 10",
                 property.getPropertyURL()
         );
-        System.out.println("QRY: " + qryStr);
         final String cacheFileName = "frequent-instances-" + md5(qryStr);
         final List<String> cached = getCachedResults(cacheFileName);
         if(cached != null) return cached;
@@ -125,7 +127,6 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         QuerySolution solution;
         while (results.hasNext()) {
             solution = results.next();
-            System.out.println("SOLN: " + solution);
             out.add(solution.get("?i").toString());
         }
         cacheResults(cacheFileName, out);
@@ -154,7 +155,6 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
                 String.format("SELECT ?i WHERE { ?i <%s> <%s> }", property.getPropertyURL(), instance)
                 :
                 String.format("SELECT ?i WHERE { <%s> <%s> ?i }", instance, property.getPropertyURL());
-        System.out.println("ADIACENT QUERY: " + qryStr);
         Query qry = QueryFactory.create(qryStr, Syntax.syntaxSPARQL_11);
         QueryExecution qexec = QueryExecutionFactory.create(qry, getModel());
         ResultSet results = qexec.execSelect();

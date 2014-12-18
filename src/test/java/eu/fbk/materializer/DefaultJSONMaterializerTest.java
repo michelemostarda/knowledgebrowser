@@ -23,10 +23,12 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 /**
- * @author Michele Mostarda (me@michelemostarda.it)
+ * @author Michele Mostarda (mostarda@fbk.eu)
  */
 public class DefaultJSONMaterializerTest {
 
@@ -41,12 +43,12 @@ public class DefaultJSONMaterializerTest {
         materializer.materialize(
                 Arrays.asList(
                         new Property("http://purl.org/dc/elements/1.1/creator", true),
-                        new Property("http://purl.org/dc/terms/references")
+                        new Property("http://swrc.ontoware.org/ontology#series")
                 ),
                 generator
         );
         generator.flush();
-        System.out.println(baos.toString());
+        Files.write(FileSystems.getDefault().getPath("./out"), baos.toByteArray());
     }
 
 }

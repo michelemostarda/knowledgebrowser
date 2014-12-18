@@ -86,7 +86,7 @@ public class HDTJenaTest {
         //Query query = QueryFactory.create("SELECT * WHERE {?s ?p ?o. ?o ?p1 ?o1} ", Syntax.syntaxSPARQL_11);
         //Query query = QueryFactory.create("SELECT * WHERE {?s ?p ?o. ?o ?p1 ?o1. ?o1 ?p2 ?o2} ", Syntax.syntaxSPARQL_11);
         //Query query = QueryFactory.create("SELECT * WHERE {?s a <http://lemon-model.net/lemon#LexicalSense>. ?s ?p ?o. ?o ?p1 ?o1} ", Syntax.syntaxSPARQL_11);
-        Query query = QueryFactory.create("SELECT DISTINCT ?p (COUNT (?p) as ?pcount) ?ca ?cb {?a a ?ca . ?b a ?cb . ?a ?p ?b } GROUP BY ?p ?ca ?cb ORDER BY ?ca ?p ?pcount ?cb", Syntax.syntaxSPARQL_11);
+        //Query query = QueryFactory.create("SELECT DISTINCT ?p (COUNT (?p) as ?pcount) ?ca ?cb {?a a ?ca . ?b a ?cb . ?a ?p ?b } GROUP BY ?p ?ca ?cb ORDER BY ?ca ?p ?pcount ?cb", Syntax.syntaxSPARQL_11);
         //Query query = QueryFactory.create(PROPS_BY_CLASS_QRY, Syntax.syntaxSPARQL_11);
 
         // Misc queries
@@ -96,6 +96,7 @@ public class HDTJenaTest {
         //Query query = QueryFactory.create("SELECT * where { ?s a <http://lemon-model.net/lemon#LexicalSense>. ?s ?p ?o. ?o ?p1 ?o1}", Syntax.syntaxSPARQL_11);
         //Query query = QueryFactory.create("SELECT DISTINCT ?class ?p (COUNT(?s) AS ?count1) (COUNT(?o) AS ?count2) { ?s a ?class. ?s ?p ?o } GROUP BY ?class ?p ORDER BY ?count1", Syntax.syntaxSPARQL_11);
         //Query query = QueryFactory.create("SELECT DISTINCT ?class ?property (COUNT(?s) AS ?count ) WHERE {?s a ?class. ?s ?property ?o } GROUP BY ?class ?property ORDER BY ?count", Syntax.syntaxSPARQL_11);
+        Query query = QueryFactory.create("SELECT DISTINCT ?s (COUNT(?s) AS ?count) {?s <http://purl.org/dc/elements/1.1/creator> ?o} GROUP BY ?s ORDER BY DESC(?count) LIMIT 10", Syntax.syntaxSPARQL_11);
 
 //        Query query = QueryFactory.create("select * {\n" +
 //                " ?agent a <http://xmlns.com/foaf/0.1/Agent>.\n" +
