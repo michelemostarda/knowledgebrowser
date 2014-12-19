@@ -17,15 +17,32 @@
 
 package eu.fbk.materializer;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import org.codehaus.jackson.JsonGenerator;
 
 import java.util.List;
 
 /**
+ * Defines a materializer for JSON data.
+ *
  * @author Michele Mostarda (mostarda@fbk.eu)
  */
 public interface JSONMaterializer {
 
-    void materialize(List<Property> properties, JsonGenerator generator) throws JsonMaterializerException;
+    /**
+     *
+     * @return the data model.
+     */
+    Model getModel();
+
+    /**
+     * Produces a JSON materialization using <code>generator</code> materialization of the underlying
+     * {@link #getModel()} on the specified levels.
+     *
+     * @param properties
+     * @param generator
+     * @throws JsonMaterializerException
+     */
+    void materialize(List<Level> properties, JsonGenerator generator) throws JsonMaterializerException;
 
 }

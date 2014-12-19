@@ -85,54 +85,7 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
     }
 
     @Override
-    public void materialize(List<Property> properties, JsonGenerator generator) throws JsonMaterializerException {
-        try {
-            List<String> instances = moreFrequentInstances(properties.get(0));
-            generator.writeStartObject();
-            for (String instance : instances) {
-                generator.writeFieldName(instance);
-                materialize(instance, 0, properties, generator);
-            }
-            generator.writeEndObject();
-        } catch (Exception e) {
-            throw new JsonMaterializerException("Error while materializing JSON", e);
-        }
-    }
-
-    private void materialize(String instance, int level, List<Property> properties, JsonGenerator generator) throws IOException {
-        generator.writeStartObject();
-        if(level > 0) {
-            generator.writeFieldName("@instance");
-            generator.writeString(instance);
-        }
-        final Set<String> propertyURLs = new HashSet<>();
-        for(Property property : properties) {
-            for(Edge edge : property.getEdges()) {
-                propertyURLs.add(edge.property);
-            }
-        }
-        for (String[] propertyValue : propertyValues(instance)) {
-            String propertyName = propertyValue[0];
-            generator.writeFieldName(propertyName + (propertyURLs.contains(propertyName) ? "__" : ""));
-            generator.writeString(propertyValue[1]);
-        }
-
-        if (properties.size() > 0) {
-            Property nextJump = properties.get(0);
-            for(Edge edge : nextJump.getEdges()) {
-                List<String> adiacentInstances = adiacentInstances(instance, edge, nextJump.isRevert());
-                generator.writeFieldName(edge.property);
-                generator.writeStartArray();
-                for (String adiacentInstance : adiacentInstances) {
-                    materialize(adiacentInstance, level + 1, properties.subList(1, properties.size()), generator);
-                }
-                generator.writeEndArray();
-            }
-        }
-        generator.writeEndObject();
-    }
-
-    private Model getModel() {
+    public Model getModel() {
         if(model == null) {
             final HDT hdt;
             try {
@@ -146,11 +99,59 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         return model;
     }
 
-    private List<String> moreFrequentInstances(Property property) {
-        final Edge e = property.getHeaviestEdge();
+    @Override
+    public void materialize(List<Level> levels, JsonGenerator generator) throws JsonMaterializerException {
+        try {
+            List<String> instances = moreFrequentInstances(levels.get(0));
+            generator.writeStartObject();
+            for (String instance : instances) {
+                generator.writeFieldName(instance);
+                materialize(instance, 0, levels, generator);
+            }
+            generator.writeEndObject();
+        } catch (Exception e) {
+            throw new JsonMaterializerException("Error while materializing JSON", e);
+        }
+    }
+
+    private void materialize(String instance, int level, List<Level> properties, JsonGenerator generator) throws IOException {
+        generator.writeStartObject();
+        if(level > 0) {
+            generator.writeFieldName("@instance");
+            generator.writeString(instance);
+        }
+        final Set<String> propertyURLs = new HashSet<>();
+        for(Level property : properties) {
+            for(Edge edge : property.getEdges()) {
+                propertyURLs.add(edge.property);
+            }
+        }
+        for (String[] propertyValue : propertyValues(instance)) {
+            String propertyName = propertyValue[0];
+            generator.writeFieldName(propertyName + (propertyURLs.contains(propertyName) ? "__" : ""));
+            generator.writeString(propertyValue[1]);
+        }
+
+        if (properties.size() > 0) {
+            Level nextJump = properties.get(0);
+            for(Edge edge : nextJump.getEdges()) {
+                List<String> adiacentInstances = adiacentInstances(instance, edge, nextJump.isRevert());
+                generator.writeFieldName(edge.property);
+                generator.writeStartArray();
+                for (String adiacentInstance : adiacentInstances) {
+                    materialize(adiacentInstance, level + 1, properties.subList(1, properties.size()), generator);
+                }
+                generator.writeEndArray();
+            }
+        }
+        generator.writeEndObject();
+    }
+
+    private List<String> moreFrequentInstances(Level level) {
+        final Edge e = level.getHeaviestEdge();
         final String qryStr = String.format(
                 "SELECT DISTINCT ?i (COUNT(?i) AS ?count) " +
-                (property.isRevert() ?
+                (level.isRevert() ?
                         String.format("{?i a <%s>. ?s a <%s>. ?s <%s> ?i}", e.cRight, e.cLeft, e.property)
                         :
                         String.format("{?i a <%s>. ?o a <%s>. ?i <%s> ?o}", e.cLeft, e.cRight, e.property)

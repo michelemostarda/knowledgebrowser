@@ -167,7 +167,7 @@ public class PathAnalysis implements Serializable {
         return difference.isEmpty();
     }
 
-    public Property[] toPropertyPath(Edge[] edges) {
+    public Level[] toPropertyPath(Edge[] edges) {
         if(!isConnected(edges)) throw new IllegalArgumentException("Edges must be connected.");
 
         final List<List<Edge>> sortedEdges = buildPathDepthFirst(edges[0].cLeft, new ArrayList<>(Arrays.asList(edges)));

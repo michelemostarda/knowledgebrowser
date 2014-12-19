@@ -49,11 +49,11 @@ public class DefaultJSONMaterializerTest {
             generator.setPrettyPrinter(new DefaultPrettyPrinter());
             materializer.materialize(
                     Arrays.asList(
-                            new Property(
+                            new Level(
                                     new Edge("http://purl.org/dc/elements/1.1/creator", 5786365, "http://xmlns.com/foaf/0.1/Document", "http://xmlns.com/foaf/0.1/Agent"),
                                     new Edge("http://swrc.ontoware.org/ontology#series", 1207225, "http://xmlns.com/foaf/0.1/Document", "http://swrc.ontoware.org/ontology#Conference")
                             ),
-                            new Property(true, new Edge("http://purl.org/dc/elements/1.1/creator", 2284410, "http://swrc.ontoware.org/ontology#Article", "http://xmlns.com/foaf/0.1/Agent"))
+                            new Level(true, new Edge("http://purl.org/dc/elements/1.1/creator", 2284410, "http://swrc.ontoware.org/ontology#Article", "http://xmlns.com/foaf/0.1/Agent"))
                     ),
                     generator
             );
@@ -72,7 +72,7 @@ public class DefaultJSONMaterializerTest {
     public void testGetMaxSpanningTreeAndPath() {
         final PathAnalysis pathAnalysis = materializer.getPathAnalysis();
         final Edge[] edges = pathAnalysis.getMaxSpanningTree();
-        final Property[] path = pathAnalysis.toPropertyPath(edges);
+        final Level[] path = pathAnalysis.toPropertyPath(edges);
         System.out.println("EDGES: " + Arrays.toString(edges));
         System.out.println(Arrays.toString(path));
     }

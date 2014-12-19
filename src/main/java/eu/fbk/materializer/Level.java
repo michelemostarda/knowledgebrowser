@@ -18,14 +18,16 @@
 package eu.fbk.materializer;
 
 /**
- * @author Michele Mostarda (mostarda@fb.eu)
+ * Defines a single level in the navigation path.
+ *
+ * @author Michele Mostarda (mostarda@fbk.eu)
  */
-public class Property {
+public class Level {
 
     private final Edge[] edges;
     private final boolean revert;
 
-    public Property(boolean revert, Edge... edges) {
+    public Level(boolean revert, Edge... edges) {
         if(edges == null || edges.length == 0) throw new IllegalArgumentException();
         String l = edges[0].cLeft;
         String r = edges[0].cRight;
@@ -41,7 +43,7 @@ public class Property {
         this.edges = edges;
     }
 
-    public Property(Edge... edges) {
+    public Level(Edge... edges) {
         this(false, edges);
     }
 
