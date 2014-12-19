@@ -19,14 +19,14 @@ package eu.fbk.materializer;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.util.DefaultPrettyPrinter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.util.Arrays;
 
 /**
@@ -44,17 +44,19 @@ public class DefaultJSONMaterializerTest {
     @Test
     public void testMaterialize() throws IOException, JsonMaterializerException {
         JsonFactory factory = new JsonFactory();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonGenerator generator = factory.createJsonGenerator(baos);
-        materializer.materialize(
-                Arrays.asList(
-                        new Property("http://purl.org/dc/elements/1.1/creator", true),
-                        new Property("http://swrc.ontoware.org/ontology#series")
-                ),
-                generator
-        );
-        generator.flush();
-        Files.write(FileSystems.getDefault().getPath("./out"), baos.toByteArray());
+        try(BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("./out.json"))) {
+            JsonGenerator generator = factory.createJsonGenerator(bos);
+            generator.setPrettyPrinter(new DefaultPrettyPrinter());
+            materializer.materialize(
+                    Arrays.asList(
+                            new Property(new Edge("http://purl.org/dc/elements/1.1/creator", 5786365, "http://xmlns.com/foaf/0.1/Document", "http://xmlns.com/foaf/0.1/Agent")),
+                            new Property(new Edge("http://purl.org/dc/elements/1.1/creator", 2284410, "http://swrc.ontoware.org/ontology#Article", "http://xmlns.com/foaf/0.1/Agent"), true)
+                            //http://xmlns.com/foaf/0.1/Document -- http://swrc.ontoware.org/ontology#series (1207225) --> http://swrc.ontoware.org/ontology#Conference
+                    ),
+                    generator
+            );
+            generator.flush();
+        }
     }
 
     @Test
@@ -69,6 +71,7 @@ public class DefaultJSONMaterializerTest {
         final PathAnalysis pathAnalysis = materializer.getPathAnalysis();
         final Edge[] edges = pathAnalysis.getMaxSpanningTree();
         final Property[] path = pathAnalysis.toPropertyPath(edges);
+        System.out.println("EDGES: " + Arrays.toString(edges));
         System.out.println(Arrays.toString(path));
     }
 

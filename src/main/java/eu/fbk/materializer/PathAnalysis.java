@@ -96,8 +96,6 @@ public class PathAnalysis implements Serializable {
                 }
             }
             if(!added) stack.pop();
-//            if(!added)
-//                throw new IllegalArgumentException("Unconnected graph");
         }
         return out;
     }

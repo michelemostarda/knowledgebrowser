@@ -22,20 +22,20 @@ package eu.fbk.materializer;
  */
 public class Property {
 
-    private final String propertyURL;
+    private final Edge edge;
     private final boolean revert;
 
-    public Property(String propertyURL, boolean revert) {
-        this.propertyURL = propertyURL;
+    public Property(Edge edge, boolean revert) {
+        this.edge = edge;
         this.revert = revert;
     }
 
-    public Property(String propertyURL) {
-        this(propertyURL, false);
+    public Property(Edge edge) {
+        this(edge, false);
     }
 
-    public String getPropertyURL() {
-        return propertyURL;
+    public Edge getEdge() {
+        return edge;
     }
 
     public boolean isRevert() {

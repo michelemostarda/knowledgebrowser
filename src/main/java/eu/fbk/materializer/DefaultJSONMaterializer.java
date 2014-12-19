@@ -39,7 +39,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -103,16 +105,20 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
             generator.writeFieldName("@instance");
             generator.writeString(instance);
         }
+        final Set<String> propertyURLs = new HashSet<>();
+        for(Property property : properties) {
+            propertyURLs.add(property.getEdge().property);
+        }
         for (String[] propertyValue : propertyValues(instance)) {
             String propertyName = propertyValue[0];
-            generator.writeFieldName(propertyName + (properties.contains(propertyName) ? "__" : ""));
+            generator.writeFieldName(propertyName + (propertyURLs.contains(propertyName) ? "__" : ""));
             generator.writeString(propertyValue[1]);
         }
 
         if (properties.size() > 0) {
             Property nextJump = properties.get(0);
             List<String> adiacentInstances = adiacentInstances(instance, nextJump);
-            generator.writeFieldName(nextJump.getPropertyURL());
+            generator.writeFieldName(nextJump.getEdge().property);
             generator.writeStartArray();
             for (String adiacentInstance : adiacentInstances) {
                 materialize(adiacentInstance, level + 1, properties.subList(1, properties.size()), generator);
@@ -137,13 +143,20 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
     }
 
     private List<String> moreFrequentInstances(Property property) {
+        final Edge e = property.getEdge();
         final String qryStr = String.format(
                 "SELECT DISTINCT ?i (COUNT(?i) AS ?count) " +
-                (property.isRevert() ? "WHERE {?o <%s> ?i } " : "WHERE {?i <%s> ?o } ") +
+                (property.isRevert() ?
+                        String.format("{?i a <%s>. ?s a <%s>. ?s <%s> ?i}", e.cRight, e.cLeft, e.property)
+                        :
+                        String.format("{?i a <%s>. ?o a <%s>. ?i <%s> ?o}", e.cLeft, e.cRight, e.property)
+                ) +
                 "GROUP BY ?i " +
                 "ORDER BY DESC(?count) " +
                 "LIMIT 10",
-                property.getPropertyURL()
+                property.getEdge().cLeft,
+                property.getEdge().cRight,
+                property.getEdge().property
         );
         final String cacheFileName = "frequent-instances-" + md5(qryStr);
         final List<String> cached = getCachedResults(cacheFileName);
@@ -178,11 +191,14 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
     }
 
     private List<String> adiacentInstances(String instance, Property property) {
-        String qryStr = property.isRevert()
-                ?
-                String.format("SELECT ?i WHERE { ?i <%s> <%s> }", property.getPropertyURL(), instance)
+        final Edge e = property.getEdge();
+        String qryStr = "SELECT ?i " +
+                (property.isRevert() ?
+                String.format("{?i a <%s>. ?i <%s> <%s>}", e.cLeft, e.property, instance)
                 :
-                String.format("SELECT ?i WHERE { <%s> <%s> ?i }", instance, property.getPropertyURL());
+                String.format("{?i a <%s>. <%s> <%s> ?i}", e.cRight, instance, e.property)
+
+                );
         Query qry = QueryFactory.create(qryStr, Syntax.syntaxSPARQL_11);
         QueryExecution qexec = QueryExecutionFactory.create(qry, getModel());
         ResultSet results = qexec.execSelect();
@@ -208,8 +224,8 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
     }
 
     private <T> T getCachedResults(String queryId) {
+        File in = new File(queryId + ".ser");
         try {
-            File in = new File(queryId + ".ser");
             if(!in.exists()) return null;
             FileInputStream fis = new FileInputStream(in);
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -218,7 +234,7 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
             fis.close();
             return (T) out;
         } catch (Exception e) {
-            throw new RuntimeException("Error while deserializing result", e);
+            throw new RuntimeException("Error while deserializing result from file " + in.getAbsolutePath(), e);
         }
     }
 
