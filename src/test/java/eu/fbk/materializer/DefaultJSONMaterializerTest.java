@@ -49,9 +49,11 @@ public class DefaultJSONMaterializerTest {
             generator.setPrettyPrinter(new DefaultPrettyPrinter());
             materializer.materialize(
                     Arrays.asList(
-                            new Property(new Edge("http://purl.org/dc/elements/1.1/creator", 5786365, "http://xmlns.com/foaf/0.1/Document", "http://xmlns.com/foaf/0.1/Agent")),
-                            new Property(new Edge("http://purl.org/dc/elements/1.1/creator", 2284410, "http://swrc.ontoware.org/ontology#Article", "http://xmlns.com/foaf/0.1/Agent"), true)
-                            //http://xmlns.com/foaf/0.1/Document -- http://swrc.ontoware.org/ontology#series (1207225) --> http://swrc.ontoware.org/ontology#Conference
+                            new Property(
+                                    new Edge("http://purl.org/dc/elements/1.1/creator", 5786365, "http://xmlns.com/foaf/0.1/Document", "http://xmlns.com/foaf/0.1/Agent"),
+                                    new Edge("http://swrc.ontoware.org/ontology#series", 1207225, "http://xmlns.com/foaf/0.1/Document", "http://swrc.ontoware.org/ontology#Conference")
+                            ),
+                            new Property(true, new Edge("http://purl.org/dc/elements/1.1/creator", 2284410, "http://swrc.ontoware.org/ontology#Article", "http://xmlns.com/foaf/0.1/Agent"))
                     ),
                     generator
             );

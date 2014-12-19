@@ -22,24 +22,47 @@ package eu.fbk.materializer;
  */
 public class Property {
 
-    private final Edge edge;
+    private final Edge[] edges;
     private final boolean revert;
 
-    public Property(Edge edge, boolean revert) {
-        this.edge = edge;
+    public Property(boolean revert, Edge... edges) {
+        if(edges == null || edges.length == 0) throw new IllegalArgumentException();
+        String l = edges[0].cLeft;
+        String r = edges[0].cRight;
+        boolean leftEquals = true, rightEquals = true;
+        for(Edge e : edges) {
+            if(!e.cLeft.equals(l)) leftEquals = false;
+            if(!e.cRight.equals(r)) rightEquals = false;
+        }
+        if(!leftEquals && !rightEquals)
+            throw new IllegalArgumentException("All parallel edges must be oriented the same");
+
         this.revert = revert;
+        this.edges = edges;
     }
 
-    public Property(Edge edge) {
-        this(edge, false);
-    }
-
-    public Edge getEdge() {
-        return edge;
+    public Property(Edge... edges) {
+        this(false, edges);
     }
 
     public boolean isRevert() {
         return revert;
+    }
+
+    public Edge[] getEdges() {
+        return edges;
+    }
+
+    public Edge getHeaviestEdge() {
+        int max = Integer.MIN_VALUE;
+        Edge target = null;
+        for(Edge e : edges) {
+            if(max < e.occurrences) {
+                max = e.occurrences;
+                target = e;
+            }
+        }
+        return target;
     }
 
 }

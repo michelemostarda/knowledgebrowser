@@ -107,7 +107,9 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         }
         final Set<String> propertyURLs = new HashSet<>();
         for(Property property : properties) {
-            propertyURLs.add(property.getEdge().property);
+            for(Edge edge : property.getEdges()) {
+                propertyURLs.add(edge.property);
+            }
         }
         for (String[] propertyValue : propertyValues(instance)) {
             String propertyName = propertyValue[0];
@@ -117,13 +119,15 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
 
         if (properties.size() > 0) {
             Property nextJump = properties.get(0);
-            List<String> adiacentInstances = adiacentInstances(instance, nextJump);
-            generator.writeFieldName(nextJump.getEdge().property);
-            generator.writeStartArray();
-            for (String adiacentInstance : adiacentInstances) {
-                materialize(adiacentInstance, level + 1, properties.subList(1, properties.size()), generator);
+            for(Edge edge : nextJump.getEdges()) {
+                List<String> adiacentInstances = adiacentInstances(instance, edge, nextJump.isRevert());
+                generator.writeFieldName(edge.property);
+                generator.writeStartArray();
+                for (String adiacentInstance : adiacentInstances) {
+                    materialize(adiacentInstance, level + 1, properties.subList(1, properties.size()), generator);
+                }
+                generator.writeEndArray();
             }
-            generator.writeEndArray();
         }
         generator.writeEndObject();
     }
@@ -143,7 +147,7 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
     }
 
     private List<String> moreFrequentInstances(Property property) {
-        final Edge e = property.getEdge();
+        final Edge e = property.getHeaviestEdge();
         final String qryStr = String.format(
                 "SELECT DISTINCT ?i (COUNT(?i) AS ?count) " +
                 (property.isRevert() ?
@@ -154,9 +158,9 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
                 "GROUP BY ?i " +
                 "ORDER BY DESC(?count) " +
                 "LIMIT 10",
-                property.getEdge().cLeft,
-                property.getEdge().cRight,
-                property.getEdge().property
+                e.cLeft,
+                e.cRight,
+                e.property
         );
         final String cacheFileName = "frequent-instances-" + md5(qryStr);
         final List<String> cached = getCachedResults(cacheFileName);
@@ -190,10 +194,9 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         return out;
     }
 
-    private List<String> adiacentInstances(String instance, Property property) {
-        final Edge e = property.getEdge();
+    private List<String> adiacentInstances(String instance, Edge e, boolean isRevert) {
         String qryStr = "SELECT ?i " +
-                (property.isRevert() ?
+                (isRevert ?
                 String.format("{?i a <%s>. ?i <%s> <%s>}", e.cLeft, e.property, instance)
                 :
                 String.format("{?i a <%s>. <%s> <%s> ?i}", e.cRight, instance, e.property)

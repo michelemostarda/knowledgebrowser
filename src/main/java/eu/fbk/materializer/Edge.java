@@ -30,11 +30,11 @@ public class Edge implements Comparable<Edge>, Serializable {
     final String cLeft;
     final String cRight;
 
-    Edge(String property, int occurrences, String cLeft, String cRight) {
-        this.property = property;
+    public Edge(String property, int occurrences, String cLeft, String cRight) {
+        this.property = property.trim();
         this.occurrences = occurrences;
-        this.cLeft = cLeft;
-        this.cRight = cRight;
+        this.cLeft = cLeft.trim();
+        this.cRight = cRight.trim();
     }
 
     @Override
