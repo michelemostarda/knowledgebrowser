@@ -19,6 +19,8 @@ package eu.fbk.materializer;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -32,11 +34,15 @@ import java.util.Arrays;
  */
 public class DefaultJSONMaterializerTest {
 
+    private DefaultJSONMaterializer materializer;
+
+    @Before
+    public void setUp() {
+        materializer = new DefaultJSONMaterializer("/Users/hardest/Downloads/hdt-data/dblp-2012-11-28.hdt.gz");
+    }
+
     @Test
     public void testMaterialize() throws IOException, JsonMaterializerException {
-        final DefaultJSONMaterializer materializer = new DefaultJSONMaterializer(
-                "/Users/hardest/Downloads/hdt-data/dblp-2012-11-28.hdt.gz"
-        );
         JsonFactory factory = new JsonFactory();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonGenerator generator = factory.createJsonGenerator(baos);
@@ -49,6 +55,21 @@ public class DefaultJSONMaterializerTest {
         );
         generator.flush();
         Files.write(FileSystems.getDefault().getPath("./out"), baos.toByteArray());
+    }
+
+    @Test
+    public void testGetPathAnalysis() {
+        final PathAnalysis pathAnalysis = materializer.getPathAnalysis();
+        Assert.assertEquals(96, pathAnalysis.getEdges().length);
+        Assert.assertEquals(192, pathAnalysis.getNodes().length);
+    }
+
+    @Test
+    public void testGetMaxSpanningTreeAndPath() {
+        final PathAnalysis pathAnalysis = materializer.getPathAnalysis();
+        final Edge[] edges = pathAnalysis.getMaxSpanningTree();
+        final Property[] path = pathAnalysis.toPropertyPath(edges);
+        System.out.println(Arrays.toString(path));
     }
 
 }

@@ -54,6 +54,34 @@ public class DefaultJSONMaterializer implements JSONMaterializer {
         if(!this.hdtFile.exists()) throw new IllegalArgumentException();
     }
 
+    public PathAnalysis getPathAnalysis() {
+        final String qryStr =
+                "SELECT ?p ?t1 ?t2 (COUNT(?p) AS ?pcount) " +
+                "WHERE {?s1 a ?t1. ?s2 a ?t2. ?s1 ?p ?s2} " +
+                "GROUP BY ?p ?pcount ?t1 ?t2 " +
+                "ORDER BY DESC(?pcount)";
+        final String cacheFileName = "frequent-paths-" + md5(qryStr);
+        final PathAnalysis cached = getCachedResults(cacheFileName);
+        if(cached != null) return cached;
+
+        Query qry = QueryFactory.create(qryStr, Syntax.syntaxSPARQL_11);
+        QueryExecution qexec = QueryExecutionFactory.create(qry, getModel());
+        ResultSet results = qexec.execSelect();
+        final PathAnalysis propertyTree = new PathAnalysis();
+        QuerySolution solution;
+        while (results.hasNext()) {
+            solution = results.next();
+            propertyTree.add(
+                    solution.get("?p").asResource().getURI(),
+                    solution.get("?pcount").asLiteral().getInt(),
+                    solution.get("?t1").asResource().getURI(),
+                    solution.get("?t2").asResource().getURI()
+            );
+        }
+        cacheResults(cacheFileName, propertyTree);
+        return propertyTree;
+    }
+
     @Override
     public void materialize(List<Property> properties, JsonGenerator generator) throws JsonMaterializerException {
         try {
