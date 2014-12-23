@@ -39,7 +39,7 @@ public class PathAnalysisTest {
         edgeList.add(new Edge("P3", 1, "CR4", "CR3"));
         Assert.assertEquals(
                 "[[CL1 -- P1 (1) --> CR1], [CR1 -- P2 (1) --> CR2, CR1 -- P3 (1) --> CR3], [CR4 -- P3 (1) --> CR3]]",
-                PathAnalysis.buildPathDepthFirst(edgeList.get(0).cLeft, edgeList).toString()
+                PathAnalysis.sortPathDepthFirst(edgeList.get(0).cLeft, edgeList).toString()
         );
     }
 

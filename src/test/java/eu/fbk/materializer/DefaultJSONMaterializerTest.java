@@ -17,6 +17,7 @@
 
 package eu.fbk.materializer;
 
+import com.google.common.io.Files;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.util.DefaultPrettyPrinter;
@@ -25,8 +26,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -43,8 +46,9 @@ public class DefaultJSONMaterializerTest {
 
     @Test
     public void testMaterialize() throws IOException, JsonMaterializerException {
+        final File out = new File("./out.json");
         JsonFactory factory = new JsonFactory();
-        try(BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("./out.json"))) {
+        try(BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(out))) {
             JsonGenerator generator = factory.createJsonGenerator(bos);
             generator.setPrettyPrinter(new DefaultPrettyPrinter());
             materializer.materialize(
@@ -59,6 +63,9 @@ public class DefaultJSONMaterializerTest {
             );
             generator.flush();
         }
+        final String content = Files.toString(out, Charset.defaultCharset());
+        Assert.assertTrue(content.contains("http://purl.org/dc/elements/1.1/creator"));
+        Assert.assertTrue(content.contains("http://swrc.ontoware.org/ontology#series"));
     }
 
     @Test
@@ -69,12 +76,51 @@ public class DefaultJSONMaterializerTest {
     }
 
     @Test
-    public void testGetMaxSpanningTreeAndPath() {
+    public void testBuildLevels() {
         final PathAnalysis pathAnalysis = materializer.getPathAnalysis();
         final Edge[] edges = pathAnalysis.getMaxSpanningTree();
-        final Level[] path = pathAnalysis.toPropertyPath(edges);
-        System.out.println("EDGES: " + Arrays.toString(edges));
-        System.out.println(Arrays.toString(path));
+        Assert.assertEquals(
+                "[" +
+                "http://xmlns.com/foaf/0.1/Document -- http://purl.org/dc/elements/1.1/creator (5786365) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://swrc.ontoware.org/ontology#InProceedings -- http://purl.org/dc/elements/1.1/creator (3400645) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://swrc.ontoware.org/ontology#Article -- http://purl.org/dc/elements/1.1/creator (2284410) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://www.w3.org/1999/02/22-rdf-syntax-ns#type (2134666) --> http://www.w3.org/2000/01/rdf-schema#Class, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://swrc.ontoware.org/ontology#series (1207225) --> http://swrc.ontoware.org/ontology#Conference, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://purl.org/dc/terms/partOf (1092689) --> http://swrc.ontoware.org/ontology#Proceedings, " +
+                "http://swrc.ontoware.org/ontology#Article -- http://swrc.ontoware.org/ontology#journal (888172) --> http://swrc.ontoware.org/ontology#Journal, " +
+                "http://swrc.ontoware.org/ontology#InCollection -- http://purl.org/dc/elements/1.1/creator (34880) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://purl.org/dc/terms/partOf (22185) --> http://swrc.ontoware.org/ontology#Book, " +
+                "http://swrc.ontoware.org/ontology#PhDThesis -- http://purl.org/dc/elements/1.1/creator (6915) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://swrc.ontoware.org/ontology#InCollection -- http://swrc.ontoware.org/ontology#series (3804) --> http://swrc.ontoware.org/ontology#Collection, " +
+                "http://swrc.ontoware.org/ontology#MasterThesis -- http://purl.org/dc/elements/1.1/creator (9) --> http://xmlns.com/foaf/0.1/Agent]",
+                Arrays.toString(edges)
+        );
+        final Level[] levels = pathAnalysis.buildLevels(edges);
+        Assert.assertEquals(
+                "[" +
+                "false [" +
+                "http://xmlns.com/foaf/0.1/Document -- http://purl.org/dc/elements/1.1/creator (5786365) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://www.w3.org/1999/02/22-rdf-syntax-ns#type (2134666) --> http://www.w3.org/2000/01/rdf-schema#Class, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://swrc.ontoware.org/ontology#series (1207225) --> http://swrc.ontoware.org/ontology#Conference, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://purl.org/dc/terms/partOf (1092689) --> http://swrc.ontoware.org/ontology#Proceedings, " +
+                "http://xmlns.com/foaf/0.1/Document -- http://purl.org/dc/terms/partOf (22185) --> http://swrc.ontoware.org/ontology#Book" +
+                "], " +
+                "true [" +
+                "http://swrc.ontoware.org/ontology#InProceedings -- http://purl.org/dc/elements/1.1/creator (3400645) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://swrc.ontoware.org/ontology#Article -- http://purl.org/dc/elements/1.1/creator (2284410) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://swrc.ontoware.org/ontology#InCollection -- http://purl.org/dc/elements/1.1/creator (34880) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://swrc.ontoware.org/ontology#PhDThesis -- http://purl.org/dc/elements/1.1/creator (6915) --> http://xmlns.com/foaf/0.1/Agent, " +
+                "http://swrc.ontoware.org/ontology#MasterThesis -- http://purl.org/dc/elements/1.1/creator (9) --> http://xmlns.com/foaf/0.1/Agent" +
+                "], " +
+                "false [" +
+                "http://swrc.ontoware.org/ontology#Article -- http://swrc.ontoware.org/ontology#journal (888172) --> http://swrc.ontoware.org/ontology#Journal" +
+                "], " +
+                "false [" +
+                "http://swrc.ontoware.org/ontology#InCollection -- http://swrc.ontoware.org/ontology#series (3804) --> http://swrc.ontoware.org/ontology#Collection" +
+                "]" +
+                "]",
+                Arrays.toString(levels)
+        );
     }
 
 }

@@ -17,6 +17,8 @@
 
 package eu.fbk.materializer;
 
+import java.util.Arrays;
+
 /**
  * Defines a single level in the navigation path.
  *
@@ -67,4 +69,8 @@ public class Level {
         return target;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%b %s", revert, Arrays.toString(edges));
+    }
 }

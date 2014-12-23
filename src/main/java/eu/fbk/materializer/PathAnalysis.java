@@ -58,7 +58,7 @@ public class PathAnalysis implements Serializable {
         return visited.toArray(new String[visited.size()]);
     }
 
-    protected static List<List<Edge>> buildPathDepthFirst(String s, List<Edge> edges) {
+    protected static List<List<Edge>> sortPathDepthFirst(String s, List<Edge> edges) {
         if(edges.isEmpty()) return new ArrayList<>();
         final Stack<String> stack = new Stack<>();
         stack.push(s);
@@ -167,25 +167,41 @@ public class PathAnalysis implements Serializable {
         return difference.isEmpty();
     }
 
-    public Level[] toPropertyPath(Edge[] edges) {
+    public Level[] buildLevels(Edge[] edges) {
         if(!isConnected(edges)) throw new IllegalArgumentException("Edges must be connected.");
 
-        final List<List<Edge>> sortedEdges = buildPathDepthFirst(edges[0].cLeft, new ArrayList<>(Arrays.asList(edges)));
-        System.out.println(sortedEdges.toString());
-//        final Property[] out = new Property[sortedEdges.size()];
-//        int i = 0;
-//        String lastRight = edges[0].cRight;
-//        for(Edge edge : sortedEdges) {
-//            boolean inverted = !lastRight.equals(edge.cLeft);
-//            out[i++] = new Property(edge.property, inverted);
-//            lastRight = inverted ? edge.cRight : edge.cLeft;
-//        }
-//        return out;
-        return null;
+        final List<List<Edge>> sortedEdges = sortPathDepthFirst(edges[0].cLeft, new ArrayList<>(Arrays.asList(edges)));
+        final Level[] levels = new Level[sortedEdges.size()];
+        int i = 0;
+        for(List<Edge> sortedEdge : sortedEdges) {
+            boolean revert = i > 1 && i < edges.length - 1 &&
+                    Sets.intersection(
+                            getRight(sortedEdges.get(i - 1)),
+                            getLeft(sortedEdges.get(i))
+                    ).isEmpty();
+            levels[i++] = new Level(revert, sortedEdge.toArray(new Edge[sortedEdge.size()]));
+        }
+        return levels;
     }
 
     protected void add(String property, int occurrences, String classLeft, String classRight) {
         edges.add(new Edge(property, occurrences, classLeft, classRight));
+    }
+
+    private Set<String> getLeft(List<Edge> edges) {
+        final Set out = new HashSet();
+        for(Edge e : edges) {
+            out.add(e.cLeft);
+        }
+        return out;
+    }
+
+    private Set<String> getRight(List<Edge> edges) {
+        final Set out = new HashSet();
+        for(Edge e : edges) {
+            out.add(e.cRight);
+        }
+        return out;
     }
 
 }
