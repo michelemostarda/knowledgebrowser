@@ -17,13 +17,14 @@
 
 package eu.fbk.querytemplate;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -32,52 +33,31 @@ public class DefaultNestedQueryTest {
 
     @Test
     public void testNested() throws IOException {
-        final NestedQuery nestedQuery = new DefaultNestedQuery(
-                new DefaultQuery(
-                        "SELECT ?Agent {?Agent a <$Type>}",
-                        new String[]{"Type"}, new String[]{"Agent"}
-                ),
-                new DefaultQuery(
-                        "SELECT ?Article {?Article a <http://swrc.ontoware.org/ontology#Article>. ?Article <http://purl.org/dc/elements/1.1/creator> <$Agent> }"
-                        , new String[]{"Agent"}, new String[]{"Article"}
-                ) // http://swrc.ontoware.org/ontology#Article -- http://purl.org/dc/elements/1.1/creator (2284410) --> http://xmlns.com/foaf/0.1/Agent
+        final DefaultNestedQuery nestedQuery = new DefaultNestedQuery();
+        nestedQuery.addQuery(
+            "agents",
+            new DefaultQuery(
+                    "SELECT ?Agent {?Agent a <$Type>}",
+                    new String[]{"Type"}, new String[]{"Agent"}
+            )
+        );
+        nestedQuery.addQuery(
+            "articles-per-agent",
+            new DefaultQuery(
+                    "SELECT * {?Article a <http://swrc.ontoware.org/ontology#Article>. ?Article <http://purl.org/dc/elements/1.1/creator> <$Agent>. ?Article ?p ?o }"
+                    , new String[]{"Agent"}, new String[]{"p", "o"}
+            )
         );
         final QueryExecutor executor = new DefaultQueryExecutor(new File("/Users/hardest/Downloads/hdt-data/dblp-2012-11-28.hdt.gz"));
 
         FileOutputStream fos = new FileOutputStream(new File("./out.txt"));
         final PrintWriter pw = new PrintWriter(fos);
-        nestedQuery.executeNestedQuery(executor, new ResultCollector() {
-            @Override
-            public void begin() {
-                pw.println("BEGIN");
-            }
-
-            @Override
-            public void startLevel(int l) {
-                pw.println("START LEVEL " + l);
-            }
-
-            @Override
-            public void result(String[] bindings, String[] values) {
-                pw.println("RESULT " + Arrays.toString(bindings) + " " + Arrays.toString(values));
-            }
-
-                    @Override
-            public void collect(String[] bindings, String[] values) {
-                pw.println("COLLECT " + Arrays.toString(bindings) + " " + Arrays.toString(values));
-            }
-
-            @Override
-            public void endLevel(int l) {
-                pw.println("END LEVEL " + l);
-            }
-
-            @Override
-            public void end() {
-                pw.println("END");
-            }
-        },
-        "http://xmlns.com/foaf/0.1/Agent"
+        final JsonFactory factory = new JsonFactory();
+        final JsonGenerator generator = factory.createJsonGenerator(System.out);
+        nestedQuery.executeNestedQuery(
+                executor,
+                new JSONResultCollector(generator), //new PrintResultCollector(pw),
+                "http://xmlns.com/foaf/0.1/Agent"
         );
         pw.close();
     }

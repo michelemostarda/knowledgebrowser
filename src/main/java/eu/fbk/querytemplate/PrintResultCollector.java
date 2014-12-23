@@ -17,19 +17,43 @@
 
 package eu.fbk.querytemplate;
 
+import java.io.PrintWriter;
+import java.util.Arrays;
+
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
  */
-public interface ResultCollector {
+public class PrintResultCollector implements ResultCollector {
 
-    void begin();
+    private final PrintWriter pw;
 
-    void startLevel(int l, String queryName);
+    public PrintResultCollector(PrintWriter pw) {
+        this.pw = pw;
+    }
 
-    void collect(String[] bindings, String[] values);
+    @Override
+    public void begin() {
+        pw.println("Begin");
+    }
 
-    void endLevel(int l);
+    @Override
+    public void startLevel(int l, String queryName) {
+        pw.println("Start level " + l + ": " + queryName);
+    }
 
-    void end();
+    @Override
+    public void collect(String[] bindings, String[] values) {
+        pw.println("Collect " + Arrays.toString(bindings) + " " + Arrays.toString(values));
+    }
+
+    @Override
+    public void endLevel(int l) {
+        pw.println("End level " + l);
+    }
+
+    @Override
+    public void end() {
+        pw.println("End");
+    }
 
 }

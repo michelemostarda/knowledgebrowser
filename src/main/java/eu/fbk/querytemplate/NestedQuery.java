@@ -26,6 +26,8 @@ public interface NestedQuery {
 
     boolean hasLevel(int level);
 
+    String getName(int level);
+
     Query getQuery(int level);
 
     void executeQueryOnBindings(int level, Result result, QueryExecutor executor, ResultCollector collector);

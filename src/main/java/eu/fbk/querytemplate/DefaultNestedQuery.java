@@ -17,30 +17,41 @@
 
 package eu.fbk.querytemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
  */
 public class DefaultNestedQuery implements NestedQuery {
 
-    private final Query[] levels;
+    private final List<String> queryNames = new ArrayList<>();
+    private final List<Query> levels = new ArrayList<>();
 
-    public DefaultNestedQuery(Query... levels) {
-        this.levels = levels;
+
+    void addQuery(String name, Query query) {
+        queryNames.add(name);
+        levels.add(query);
     }
 
     @Override
     public int getLevels() {
-        return levels.length;
+        return levels.size();
     }
 
     @Override
     public boolean hasLevel(int level) {
-        return level < levels.length;
+        return level < levels.size();
+    }
+
+    @Override
+    public String getName(int level) {
+        return queryNames.get(level);
     }
 
     @Override
     public Query getQuery(int level) {
-        return levels[level];
+        return levels.get(level);
     }
 
     @Override
@@ -49,15 +60,20 @@ public class DefaultNestedQuery implements NestedQuery {
         String[] values;
         for(;result.next();) {
             values = result.getValues();
-            collector.result(bindings, values);
+            collector.collect(bindings, values);
             final Query levelQuery = getQuery(level);
-            final Result partial = levelQuery.perform(executor, bindArguments(bindings, values, levelQuery.getInVariables()));
-            collector.startLevel(level);
+            final Result partial = levelQuery.perform(
+                    executor, bindArguments(bindings, values, levelQuery.getInVariables())
+            );
+            collector.startLevel(level, getName(level));
             for(;partial.next();) {
-                collector.collect(partial.getBindings(), partial.getValues());
+                collector.collect(
+                        levelQuery.getOutBindings(),
+                        bindArguments(partial.getBindings(), partial.getValues(), levelQuery.getOutBindings())
+                );
                 final int nextLevel = level + 1;
                 if(hasLevel(nextLevel)) {
-                    collector.startLevel(nextLevel);
+                    collector.startLevel(nextLevel, getName(nextLevel));
                     executeQueryOnBindings(nextLevel, partial, executor, collector);
                     collector.endLevel(nextLevel);
                 }
@@ -69,7 +85,7 @@ public class DefaultNestedQuery implements NestedQuery {
     @Override
     public void executeNestedQuery(QueryExecutor executor, ResultCollector collector, String... args) {
         collector.begin();
-        collector.startLevel(0);
+        collector.startLevel(0, getName(0));
         final Query levelOQuery = getQuery(0);
         final Result result = levelOQuery.perform(executor, args);
         if(hasLevel(1))  executeQueryOnBindings(1, result, executor, collector);
