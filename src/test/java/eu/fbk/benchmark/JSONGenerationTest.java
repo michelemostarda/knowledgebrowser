@@ -1,4 +1,4 @@
-/*
+package eu.fbk.benchmark;/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -36,7 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * @author Michele Mostarda (me@michelemostarda.it)
+ * @author Michele Mostarda (mostarda@fbk.eu)
  */
 public class JSONGenerationTest {
 

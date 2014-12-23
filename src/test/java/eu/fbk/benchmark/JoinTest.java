@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import eu.fbk.Benchmark;
+package eu.fbk.benchmark;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.rdfhdt.hdt.enums.TripleComponentRole;
@@ -25,7 +26,7 @@ import org.rdfhdt.hdt.triples.TripleID;
 import java.io.IOException;
 
 /**
- * @author Michele Mostarda (me@michelemostarda.it)
+ * @author Michele Mostarda (mostarda@fbk.eu)
  */
 public class JoinTest {
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package eu.fbk;
+package eu.fbk.benchmark;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
