@@ -48,7 +48,7 @@ public class DefaultNestedQueryTest {
                     , new String[]{"Agent"}, new String[]{"p", "o"}
             )
         );
-        final QueryExecutor executor = new DefaultQueryExecutor(new File("/Users/hardest/Downloads/hdt-data/dblp-2012-11-28.hdt.gz"));
+        final QueryExecutor executor = new DefaultQueryExecutor(new File("hdt-data/dblp-2012-11-28.hdt.gz"));
 
         FileOutputStream fos = new FileOutputStream(new File("./out.txt"));
         final PrintWriter pw = new PrintWriter(fos);
