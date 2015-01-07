@@ -19,6 +19,8 @@ package eu.fbk.querytemplate;
 
 import com.hp.hpl.jena.query.ResultSet;
 
+import java.util.Arrays;
+
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
  */
@@ -29,6 +31,12 @@ public class DefaultQuery implements Query {
     private final String[] outBindings;
 
     public DefaultQuery(String template, String[] inVariables, String[] outBindings) {
+        for(String v : inVariables) {
+            checkVarExists(v, template);
+        }
+        for(String b : outBindings) {
+            checkBindingExists(b, template);
+        }
         this.template = template;
         this.inVariables = inVariables;
         this.outBindings = outBindings;
@@ -65,4 +73,20 @@ public class DefaultQuery implements Query {
         return new DefaultResult(rs);
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s in: %s out: %s", template, Arrays.toString(inVariables), Arrays.toString(outBindings));
+    }
+
+    private void checkVarExists(String v, String template) {
+        final String t = String.format("$%s", v);
+        if(!template.contains(t))
+            throw new IllegalArgumentException(String.format("Variable '%s' not found in template '%s'", t, template));
+    }
+
+    private void checkBindingExists(String b, String template) {
+        final String t = String.format("?%s", b);
+        if(!template.contains(t))
+            throw new IllegalArgumentException(String.format("Binding '%s' not found in template '%s'", t, template));
+    }
 }
