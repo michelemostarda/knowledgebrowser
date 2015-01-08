@@ -22,9 +22,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -35,31 +33,29 @@ public class DefaultNestedQueryTest {
     public void testNested() throws IOException {
         final DefaultNestedQuery nestedQuery = new DefaultNestedQuery();
         nestedQuery.addQuery(
-            "agents",
-            new DefaultQuery(
-                    "SELECT ?Agent {?Agent a <$Type>}",
-                    new String[]{"Type"}, new String[]{"Agent"}
-            )
+                "articles",
+                new DefaultQuery(
+                        "SELECT * {?Article a <$Type>. ?Article ?p ?o } LIMIT 1"
+                        ,new String[]{"Type"}, new String[]{"Article", "p", "o"}
+                )
         );
         nestedQuery.addQuery(
-            "articles-per-agent",
+            "agents",
             new DefaultQuery(
-                    "SELECT * {?Article a <http://swrc.ontoware.org/ontology#Article>. ?Article <http://purl.org/dc/elements/1.1/creator> <$Agent>. ?Article ?p ?o }"
-                    , new String[]{"Agent"}, new String[]{"p", "o"}
+                    "SELECT * {?Agent a <http://xmlns.com/foaf/0.1/Agent>. <$Article> <http://purl.org/dc/elements/1.1/creator> ?Agent. ?Agent ?p ?o}",
+                    new String[]{"Article"}, new String[]{"Agent", "p", "o"}
             )
         );
         final QueryExecutor executor = new DefaultQueryExecutor(new File("hdt-data/dblp-2012-11-28.hdt.gz"));
 
-        FileOutputStream fos = new FileOutputStream(new File("./out.txt"));
-        final PrintWriter pw = new PrintWriter(fos);
         final JsonFactory factory = new JsonFactory();
         final JsonGenerator generator = factory.createJsonGenerator(System.out);
         nestedQuery.executeNestedQuery(
                 executor,
-                new JSONResultCollector(generator), //new PrintResultCollector(pw),
-                "http://xmlns.com/foaf/0.1/Agent"
+                new JSONResultCollector(generator, "p:o"),
+                "http://swrc.ontoware.org/ontology#Article"
         );
-        pw.close();
+        generator.flush();
     }
 
 }

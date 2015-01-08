@@ -37,7 +37,7 @@ public class PrintResultCollector implements ResultCollector {
     }
 
     @Override
-    public void startLevel(int l, String queryName) {
+    public void startLevel(int l, String queryName, String[] args) {
         pw.println("Start level " + l + ": " + queryName);
     }
 

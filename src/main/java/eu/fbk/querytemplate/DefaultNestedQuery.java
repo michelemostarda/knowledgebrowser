@@ -62,10 +62,9 @@ public class DefaultNestedQuery implements NestedQuery {
             values = result.getValues();
             collector.collect(bindings, values);
             final Query levelQuery = getQuery(level);
-            final Result partial = levelQuery.perform(
-                    executor, bindArguments(bindings, values, levelQuery.getInVariables())
-            );
-            collector.startLevel(level, getName(level));
+            final String[] args = bindArguments(bindings, values, levelQuery.getInVariables());
+            collector.startLevel(level, getName(level), args);
+            final Result partial = levelQuery.perform(executor, args);
             for(;partial.next();) {
                 collector.collect(
                         levelQuery.getOutBindings(),
@@ -73,7 +72,7 @@ public class DefaultNestedQuery implements NestedQuery {
                 );
                 final int nextLevel = level + 1;
                 if(hasLevel(nextLevel)) {
-                    collector.startLevel(nextLevel, getName(nextLevel));
+                    collector.startLevel(nextLevel, getName(nextLevel), null);
                     executeQueryOnBindings(nextLevel, partial, executor, collector);
                     collector.endLevel(nextLevel);
                 }
@@ -85,7 +84,7 @@ public class DefaultNestedQuery implements NestedQuery {
     @Override
     public void executeNestedQuery(QueryExecutor executor, ResultCollector collector, String... args) {
         collector.begin();
-        collector.startLevel(0, getName(0));
+        collector.startLevel(0, getName(0), args);
         final Query levelOQuery = getQuery(0);
         final Result result = levelOQuery.perform(executor, args);
         if(hasLevel(1))  executeQueryOnBindings(1, result, executor, collector);
