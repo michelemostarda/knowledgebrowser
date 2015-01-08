@@ -24,7 +24,7 @@ public interface ResultCollector {
 
     void begin();
 
-    void startLevel(int l, String queryName);
+    void startLevel(int l, String queryName, String[] args);
 
     void collect(String[] bindings, String[] values);
 
