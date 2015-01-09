@@ -36,8 +36,10 @@ public class NestedQueryBuilderTest {
         Assert.assertNotNull(nestedQuery);
         Assert.assertEquals(2, nestedQuery.getLevels());
         Assert.assertEquals("q1", nestedQuery.getName(0));
+        Assert.assertEquals("p1", nestedQuery.getPivot(0));
         Assert.assertEquals("SELECT ?s {?s a <$T>. ?s ?p ?o} in: [T] out: [s]", nestedQuery.getQuery(0).toString());
         Assert.assertEquals("q2", nestedQuery.getName(1));
+        Assert.assertEquals("p2", nestedQuery.getPivot(1));
         Assert.assertEquals("SELECT ?o {<$S> ?p ?o in: [S] out: [o]", nestedQuery.getQuery(1).toString());
     }
 

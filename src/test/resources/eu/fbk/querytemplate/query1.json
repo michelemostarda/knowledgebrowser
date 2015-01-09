@@ -1,6 +1,6 @@
 {
   "queries": [
-      {"name": "q1", "query": "SELECT ?s {?s a <$T>. ?s ?p ?o}", "in_vars": ["T"], "out_vars": ["s"]},
-      {"name": "q2", "query": "SELECT ?o {<$S> ?p ?o", "in_vars": ["S"], "out_vars": ["o"]}
+      {"name": "q1", "query": "SELECT ?s {?s a <$T>. ?s ?p ?o}", "pivot": "p1", "in_vars": ["T"], "out_vars": ["s"]},
+      {"name": "q2", "query": "SELECT ?o {<$S> ?p ?o", "pivot": "p2", "in_vars": ["S"], "out_vars": ["o"]}
   ]
 }

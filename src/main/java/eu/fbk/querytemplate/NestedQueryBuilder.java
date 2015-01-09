@@ -33,10 +33,10 @@ public class NestedQueryBuilder {
 
     NestedQuery build(JsonNode root) {
         final JsonNode queries = root.get("queries");
-        if(!queries.isArray()) throw new IllegalArgumentException("queries field must be aan array");
+        if(!queries.isArray()) throw new IllegalArgumentException("queries field must be an array");
         final DefaultNestedQuery defaultNestedQuery = new DefaultNestedQuery();
         for(JsonNode queryNode : queries) {
-            defaultNestedQuery.addQuery(getName(queryNode), processQuery(queryNode));
+            defaultNestedQuery.addQuery(getName(queryNode), processQuery(queryNode), getPivot(queryNode));
         }
         return defaultNestedQuery;
     }
@@ -49,6 +49,10 @@ public class NestedQueryBuilder {
 
     private String getName(JsonNode queryNode) {
         return queryNode.get("name").asText();
+    }
+
+    private String getPivot(JsonNode queryNode) {
+        return queryNode.get("pivot").asText();
     }
 
     private Query processQuery(JsonNode queryNode) {
