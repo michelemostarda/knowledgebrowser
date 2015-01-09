@@ -30,6 +30,8 @@ public interface NestedQuery {
 
     Query getQuery(int level);
 
+    String getPivot(int level);
+
     void executeQueryOnBindings(int level, Result result, QueryExecutor executor, ResultCollector collector);
 
     void executeNestedQuery(QueryExecutor executor, ResultCollector collector, String... args);
