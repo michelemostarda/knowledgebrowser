@@ -32,6 +32,11 @@ public class PrintResultCollector implements ResultCollector {
     }
 
     @Override
+    public void values(String[] values) {
+        pw.println("Values: " + Arrays.toString(values));
+    }
+
+    @Override
     public void begin() {
         pw.println("Begin");
     }
@@ -43,7 +48,12 @@ public class PrintResultCollector implements ResultCollector {
 
     @Override
     public void collect(String[] bindings, String[] values) {
-        pw.println("Collect " + Arrays.toString(bindings) + " " + Arrays.toString(values));
+        pw.println("Collect: " + Arrays.toString(bindings) + " " + Arrays.toString(values));
+    }
+
+    @Override
+    public void pivot(String name) {
+        pw.println("Pivot: " + name);
     }
 
     @Override
@@ -54,6 +64,7 @@ public class PrintResultCollector implements ResultCollector {
     @Override
     public void end() {
         pw.println("End");
+        pw.flush();
     }
 
 }

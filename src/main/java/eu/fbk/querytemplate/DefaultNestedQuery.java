@@ -19,6 +19,7 @@ package eu.fbk.querytemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -27,11 +28,13 @@ public class DefaultNestedQuery implements NestedQuery {
 
     private final List<String> queryNames = new ArrayList<>();
     private final List<Query> levels = new ArrayList<>();
+    private final List<String> pivots = new ArrayList<>();
+    private final Stack<String> lastPivotValue = new Stack<>();
 
-
-    void addQuery(String name, Query query) {
+    void addQuery(String name, Query query, String pivot) {
         queryNames.add(name);
         levels.add(query);
+        pivots.add(pivot);
     }
 
     @Override
@@ -55,41 +58,50 @@ public class DefaultNestedQuery implements NestedQuery {
     }
 
     @Override
-    public void executeQueryOnBindings(final int level, Result result, QueryExecutor executor, ResultCollector collector) {
-        final String[] bindings = result.getBindings();
-        String[] values;
-        for(;result.next();) {
-            values = result.getValues();
-            collector.collect(bindings, values);
-            final Query levelQuery = getQuery(level);
-            final String[] args = bindArguments(bindings, values, levelQuery.getInVariables());
-            collector.startLevel(level, getName(level), args);
-            final Result partial = levelQuery.perform(executor, args);
-            for(;partial.next();) {
-                collector.collect(
-                        levelQuery.getOutBindings(),
-                        bindArguments(partial.getBindings(), partial.getValues(), levelQuery.getOutBindings())
-                );
-                final int nextLevel = level + 1;
-                if(hasLevel(nextLevel)) {
-                    collector.startLevel(nextLevel, getName(nextLevel), null);
-                    executeQueryOnBindings(nextLevel, partial, executor, collector);
-                    collector.endLevel(nextLevel);
-                }
-            }
-            collector.endLevel(level);
-        }
+    public String getPivot(int level) {
+        return pivots.get(level);
     }
 
     @Override
     public void executeNestedQuery(QueryExecutor executor, ResultCollector collector, String... args) {
+        lastPivotValue.clear();
         collector.begin();
-        collector.startLevel(0, getName(0), args);
-        final Query levelOQuery = getQuery(0);
-        final Result result = levelOQuery.perform(executor, args);
-        if(hasLevel(1))  executeQueryOnBindings(1, result, executor, collector);
-        collector.endLevel(0);
+        processNextLevel(0, args, executor, collector);
         collector.end();
+    }
+
+    @Override
+    public void processNextLevel(final int level, String[] args, QueryExecutor executor, ResultCollector collector) {
+        collector.startLevel(level, getName(level), args);
+        final Result result = getQuery(level).perform(executor, args);
+        final String[] bindings = result.getBindings();
+        String[] values;
+        final String pivot = getPivot(level);
+        for(;result.next();) {
+            values = result.getValues();
+            collector.values(values);
+            final String pivotValue = getValue(bindings, values, pivot);
+            if(lastPivotValue.size() < level + 1) {
+                lastPivotValue.push(pivotValue);
+                collector.pivot(pivotValue);
+                processPivot(level + 1, bindings, values, executor, collector);
+            } else if(!lastPivotValue.peek().equals(pivotValue)) {
+                lastPivotValue.pop();
+                lastPivotValue.push(pivotValue);
+                collector.pivot(pivotValue);
+                processPivot(level + 1, bindings, values, executor, collector);
+            }
+            collector.collect(bindings, values);
+        }
+        lastPivotValue.pop();
+        collector.endLevel(level);
+    }
+
+    private void processPivot(int level, String[] bindings, String[] values, QueryExecutor executor, ResultCollector collector) {
+        if (!hasLevel(level)) return;
+        final Query nextQuery = getQuery(level);
+        final String[] nextArgs = bindArguments(bindings, values, nextQuery.getInVariables());
+        processNextLevel(level, nextArgs, executor, collector);
     }
 
     private String[] bindArguments(String[] bindings, String[] values, String[] inVariables) {
@@ -100,12 +112,20 @@ public class DefaultNestedQuery implements NestedQuery {
         return out;
     }
 
+    private String getValue(String[] bindings, String[] values, String target) {
+        for(int i = 0; i < bindings.length; i++) {
+            if(bindings[i].equals(target)) {
+                return values[i];
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
     private int indexOf(String[] list, String t) {
         for(int i = 0; i < list.length; i++) {
             if(list[i].equals(t)) return i;
         }
         throw new IllegalArgumentException();
     }
-
 
 }

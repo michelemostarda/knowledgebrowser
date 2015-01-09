@@ -17,12 +17,17 @@
 
 package eu.fbk.querytemplate;
 
+import eu.fbk.JSONUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -30,32 +35,53 @@ import java.io.IOException;
 public class DefaultNestedQueryTest {
 
     @Test
-    public void testNested() throws IOException {
+    public void processQueryWithPrinterCollector() throws IOException {
+        PrintWriter pw = new PrintWriter(System.out);
+        processQuery( new PrintResultCollector(pw) );
+    }
+
+    @Test
+    public void processQueryWithJSONCollector() throws IOException {
+        final JsonFactory factory = new JsonFactory();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final JsonGenerator generator = factory.createJsonGenerator(new OutputStreamWriter(baos));
+        processQuery(new JSONResultCollector(generator, "p:o"));
+        generator.flush();
+
+        Assert.assertEquals(
+                JSONUtils.parseJSON(this.getClass().getResourceAsStream("nested-query-result.json")),
+                JSONUtils.parseJSON(baos.toString())
+        );
+    }
+
+
+    private void processQuery(ResultCollector collector) throws IOException {
         final DefaultNestedQuery nestedQuery = new DefaultNestedQuery();
         nestedQuery.addQuery(
                 "articles",
                 new DefaultQuery(
-                        "SELECT * {?Article a <$Type>. ?Article ?p ?o } LIMIT 1"
-                        ,new String[]{"Type"}, new String[]{"Article", "p", "o"}
-                )
+                        "SELECT * {?Article a <$Type>. ?Article ?p ?o } LIMIT 100"
+                        , new String[]{"Type"}, new String[]{"Article", "p", "o"}
+                ),
+                "Article"
         );
         nestedQuery.addQuery(
-            "agents",
-            new DefaultQuery(
-                    "SELECT * {?Agent a <http://xmlns.com/foaf/0.1/Agent>. <$Article> <http://purl.org/dc/elements/1.1/creator> ?Agent. ?Agent ?p ?o}",
-                    new String[]{"Article"}, new String[]{"Agent", "p", "o"}
-            )
+                "agents",
+                new DefaultQuery(
+                        "SELECT * {?Agent a <http://xmlns.com/foaf/0.1/Agent>. <$Article> <http://purl.org/dc/elements/1.1/creator> ?Agent. ?Agent ?p ?o}",
+                        new String[]{"Article"}, new String[]{"Agent", "p", "o"}
+                ),
+                "Agent"
         );
         final QueryExecutor executor = new DefaultQueryExecutor(new File("hdt-data/dblp-2012-11-28.hdt.gz"));
 
-        final JsonFactory factory = new JsonFactory();
-        final JsonGenerator generator = factory.createJsonGenerator(System.out);
+
+
         nestedQuery.executeNestedQuery(
                 executor,
-                new JSONResultCollector(generator, "p:o"),
+                collector,
                 "http://swrc.ontoware.org/ontology#Article"
         );
-        generator.flush();
     }
 
 }

@@ -22,11 +22,15 @@ package eu.fbk.querytemplate;
  */
 public interface ResultCollector {
 
+    void values(String[] values);
+
     void begin();
 
     void startLevel(int l, String queryName, String[] args);
 
     void collect(String[] bindings, String[] values);
+
+    void pivot(String name);
 
     void endLevel(int l);
 

@@ -17,14 +17,14 @@
 
 package eu.fbk.querytemplate;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
 import org.codehaus.jackson.JsonGenerator;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Stack;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -32,9 +32,10 @@ import java.util.Collection;
 public class JSONResultCollector implements ResultCollector {
 
     private final JsonGenerator generator;
-    private final Multimap<String,String> multimap = ArrayListMultimap.create();
+    private final SetMultimap<String,String> multimap = HashMultimap.create();
     private final String fieldBinding;
     private final String valueBinding;
+    private final Stack<Boolean> pivotOpen = new Stack<>();
 
     public JSONResultCollector(JsonGenerator generator, String fieldValue) {
         this.generator = generator;
@@ -43,6 +44,11 @@ public class JSONResultCollector implements ResultCollector {
             throw new IllegalArgumentException("Invalid pattern, expected: <field-binding>:<value-binding>");
         fieldBinding = parts[0];
         valueBinding = parts[1];
+    }
+
+    @Override
+    public void values(String[] values) {
+        // Empty.
     }
 
     @Override
@@ -56,12 +62,11 @@ public class JSONResultCollector implements ResultCollector {
 
     @Override
     public void startLevel(int l, String queryName, String[] args) {
+        pivotOpen.push(false);
         try {
             flushMap();
             generator.writeFieldName(queryName);
             generator.writeStartObject();
-            generator.writeFieldName("args");
-            generator.writeString(Joiner.on(',').join(args));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +76,6 @@ public class JSONResultCollector implements ResultCollector {
     public void collect(String[] bindings, String[] values) {
         System.out.println("BIN: " + Arrays.toString(bindings) +  "VALS: " + Arrays.toString(values));
         String k, v; k = v = null;
-
         for(int i = 0; i < bindings.length; i++) {
             if(fieldBinding.equals(bindings[i])) {
                 k = values[i];
@@ -79,26 +83,47 @@ public class JSONResultCollector implements ResultCollector {
                 v = values[i];
             }
         }
-        //if(k != null || v == null)
-        //    throw new IllegalArgumentException("Invalid bindings for record");
         if(k != null && v != null)
             multimap.put(k,v);
     }
 
     @Override
-    public void endLevel(int l) {
+    public void pivot(String name) {
         try {
             flushMap();
-            generator.writeEndObject();
+            if(pivotOpen.peek()) {
+                generator.writeEndObject();
+            } else {
+                pivotOpen.pop();
+                pivotOpen.push(true);
+            }
+            generator.writeFieldName(name);
+            generator.writeStartObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
+    public void endLevel(int l) {
+        try {
+            flushMap();
+            if(pivotOpen.peek()) {
+                generator.writeEndObject();
+            }
+            generator.writeEndObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        pivotOpen.pop();
+    }
+
+    @Override
     public void end() {
         try {
+            flushMap();
             generator.writeEndObject();
+            generator.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -121,4 +146,5 @@ public class JSONResultCollector implements ResultCollector {
         }
         multimap.clear();
     }
+
 }

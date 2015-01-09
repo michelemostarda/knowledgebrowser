@@ -1,0 +1,269 @@
+{
+   "articles":{
+      "http://dblp.l3s.de/d2r/resource/publications/journals/ac/BinkleyG96":{
+         "agents":{
+            "http://dblp.l3s.de/d2r/resource/authors/David_Binkley":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://www.bibsonomy.org/uri/author/David+Binkley",
+                  "http://dblp.l3s.de/Authors/David+Binkley"
+               ],
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent",
+               "http://xmlns.com/foaf/0.1/homepage":"http://www.cs.loyola.edu/~binkley/",
+               "http://xmlns.com/foaf/0.1/name":"David Binkley",
+               "http://www.w3.org/2000/01/rdf-schema#label":"David Binkley"
+            },
+            "http://dblp.l3s.de/d2r/resource/authors/Keith_Brian_Gallagher":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://www.bibsonomy.org/uri/author/Keith+Brian+Gallagher",
+                  "http://dblp.l3s.de/Authors/Keith+Brian+Gallagher"
+               ],
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent",
+               "http://xmlns.com/foaf/0.1/homepage":"http://www.cs.loyola.edu/~kbg/",
+               "http://xmlns.com/foaf/0.1/name":"Keith Brian Gallagher",
+               "http://www.w3.org/2000/01/rdf-schema#label":"Keith Brian Gallagher"
+            }
+         },
+         "http://xmlns.com/foaf/0.1/maker":[
+            "http://dblp.l3s.de/d2r/resource/authors/Keith_Brian_Gallagher",
+            "http://dblp.l3s.de/d2r/resource/authors/David_Binkley"
+         ],
+         "http://swrc.ontoware.org/ontology#journal":"http://dblp.l3s.de/d2r/resource/journals/ac",
+         "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+            "http://dblp.uni-trier.de/db/journals/ac/ac43.html#BinkleyG96",
+            "http://dx.doi.org/10.1016/S0065-2458(08)60641-5"
+         ],
+         "http://www.w3.org/2002/07/owl#sameAs":[
+            "http://dblp.rkbexplorer.com/id/journals/ac/BinkleyG96",
+            "http://bibsonomy.org/uri/bibtexkey/journals/ac/BinkleyG96/dblp"
+         ],
+         "http://purl.org/dc/elements/1.1/identifier":[
+            "DBLP journals/ac/BinkleyG96^^http://www.w3.org/2001/XMLSchema#string",
+            "DOI 10.1016%2FS0065-2458%2808%2960641-5^^http://www.w3.org/2001/XMLSchema#string"
+         ],
+         "http://purl.org/dc/terms/issued":"1996^^http://www.w3.org/2001/XMLSchema#gYear",
+         "http://www.w3.org/2000/01/rdf-schema#label":"Program Slicing.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/terms/bibliographicCitation":"http://dblp.uni-trier.de/rec/bibtex/journals/ac/BinkleyG96",
+         "http://purl.org/dc/elements/1.1/type":"http://purl.org/dc/dcmitype/Text",
+         "http://purl.org/dc/elements/1.1/title":"Program Slicing.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[
+            "http://swrc.ontoware.org/ontology#Article",
+            "http://xmlns.com/foaf/0.1/Document"
+         ],
+         "http://xmlns.com/foaf/0.1/homepage":[
+            "http://dx.doi.org/10.1016%2FS0065-2458%2808%2960641-5",
+            "http://dx.doi.org/10.1016/S0065-2458(08)60641-5"
+         ],
+         "http://purl.org/dc/elements/1.1/creator":[
+            "http://dblp.l3s.de/d2r/resource/authors/Keith_Brian_Gallagher",
+            "http://dblp.l3s.de/d2r/resource/authors/David_Binkley"
+         ],
+         "http://swrc.ontoware.org/ontology#volume":"43^^http://www.w3.org/2001/XMLSchema#string",
+         "http://swrc.ontoware.org/ontology#pages":"1-50^^http://www.w3.org/2001/XMLSchema#string"
+      },
+      "http://dblp.l3s.de/d2r/resource/publications/journals/ac/BuchananD83":{
+         "agents":{
+            "http://dblp.l3s.de/d2r/resource/authors/Bruce_G._Buchanan":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://www.bibsonomy.org/uri/author/Bruce+G.+Buchanan",
+                  "http://dblp.l3s.de/Authors/Bruce+G.+Buchanan"
+               ],
+               "http://xmlns.com/foaf/0.1/name":"Bruce G. Buchanan",
+               "http://www.w3.org/2000/01/rdf-schema#label":"Bruce G. Buchanan",
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent",
+               "http://xmlns.com/foaf/0.1/homepage":"http://www.cs.pitt.edu/~buchanan/"
+            },
+            "http://dblp.l3s.de/d2r/resource/authors/Richard_O._Duda":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://www.bibsonomy.org/uri/author/Richard+O.+Duda",
+                  "http://dblp.l3s.de/Authors/Richard+O.+Duda"
+               ],
+               "http://xmlns.com/foaf/0.1/name":"Richard O. Duda",
+               "http://www.w3.org/2000/01/rdf-schema#label":"Richard O. Duda",
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent"
+            }
+         },
+         "http://xmlns.com/foaf/0.1/maker":[
+            "http://dblp.l3s.de/d2r/resource/authors/Bruce_G._Buchanan",
+            "http://dblp.l3s.de/d2r/resource/authors/Richard_O._Duda"
+         ],
+         "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+            "http://dx.doi.org/10.1016/S0065-2458(08)60129-1",
+            "http://dblp.uni-trier.de/db/journals/ac/ac22.html#BuchananD83"
+         ],
+         "http://swrc.ontoware.org/ontology#journal":"http://dblp.l3s.de/d2r/resource/journals/ac",
+         "http://www.w3.org/2002/07/owl#sameAs":[
+            "http://bibsonomy.org/uri/bibtexkey/journals/ac/BuchananD83/dblp",
+            "http://dblp.rkbexplorer.com/id/journals/ac/BuchananD83"
+         ],
+         "http://purl.org/dc/elements/1.1/identifier":[
+            "DOI 10.1016%2FS0065-2458%2808%2960129-1^^http://www.w3.org/2001/XMLSchema#string",
+            "DBLP journals/ac/BuchananD83^^http://www.w3.org/2001/XMLSchema#string"
+         ],
+         "http://purl.org/dc/terms/issued":"1983^^http://www.w3.org/2001/XMLSchema#gYear",
+         "http://www.w3.org/2000/01/rdf-schema#label":"Principles of Rule-Based Expert Systems.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/terms/bibliographicCitation":"http://dblp.uni-trier.de/rec/bibtex/journals/ac/BuchananD83",
+         "http://purl.org/dc/elements/1.1/type":"http://purl.org/dc/dcmitype/Text",
+         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[
+            "http://swrc.ontoware.org/ontology#Article",
+            "http://xmlns.com/foaf/0.1/Document"
+         ],
+         "http://purl.org/dc/elements/1.1/title":"Principles of Rule-Based Expert Systems.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://xmlns.com/foaf/0.1/homepage":[
+            "http://dx.doi.org/10.1016/S0065-2458(08)60129-1",
+            "http://dx.doi.org/10.1016%2FS0065-2458%2808%2960129-1"
+         ],
+         "http://swrc.ontoware.org/ontology#volume":"22^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/elements/1.1/creator":[
+            "http://dblp.l3s.de/d2r/resource/authors/Bruce_G._Buchanan",
+            "http://dblp.l3s.de/d2r/resource/authors/Richard_O._Duda"
+         ],
+         "http://swrc.ontoware.org/ontology#pages":"163-216^^http://www.w3.org/2001/XMLSchema#string"
+      },
+      "http://dblp.l3s.de/d2r/resource/publications/journals/ac/ChandrasekaranM83":{
+         "agents":{
+            "http://dblp.l3s.de/d2r/resource/authors/B._Chandrasekaran":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://dblp.l3s.de/Authors/B.+Chandrasekaran",
+                  "http://www.bibsonomy.org/uri/author/B.+Chandrasekaran"
+               ],
+               "http://xmlns.com/foaf/0.1/name":"B. Chandrasekaran",
+               "http://www.w3.org/2000/01/rdf-schema#label":"B. Chandrasekaran",
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent",
+               "http://xmlns.com/foaf/0.1/homepage":"http://www.cse.ohio-state.edu/~chandra/"
+            },
+            "http://dblp.l3s.de/d2r/resource/authors/Sanjay_Mittal":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://www.bibsonomy.org/uri/author/Sanjay+Mittal",
+                  "http://dblp.l3s.de/Authors/Sanjay+Mittal"
+               ],
+               "http://xmlns.com/foaf/0.1/name":"Sanjay Mittal",
+               "http://www.w3.org/2000/01/rdf-schema#label":"Sanjay Mittal",
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent"
+            }
+         },
+         "http://xmlns.com/foaf/0.1/maker":[
+            "http://dblp.l3s.de/d2r/resource/authors/Sanjay_Mittal",
+            "http://dblp.l3s.de/d2r/resource/authors/B._Chandrasekaran"
+         ],
+         "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+            "http://dblp.uni-trier.de/db/journals/ac/ac22.html#ChandrasekaranM83",
+            "http://dx.doi.org/10.1016/S0065-2458(08)60130-8"
+         ],
+         "http://swrc.ontoware.org/ontology#journal":"http://dblp.l3s.de/d2r/resource/journals/ac",
+         "http://www.w3.org/2002/07/owl#sameAs":[
+            "http://bibsonomy.org/uri/bibtexkey/journals/ac/ChandrasekaranM83/dblp",
+            "http://dblp.rkbexplorer.com/id/journals/ac/ChandrasekaranM83"
+         ],
+         "http://purl.org/dc/elements/1.1/identifier":[
+            "DOI 10.1016%2FS0065-2458%2808%2960130-8^^http://www.w3.org/2001/XMLSchema#string",
+            "DBLP journals/ac/ChandrasekaranM83^^http://www.w3.org/2001/XMLSchema#string"
+         ],
+         "http://purl.org/dc/terms/issued":"1983^^http://www.w3.org/2001/XMLSchema#gYear",
+         "http://www.w3.org/2000/01/rdf-schema#label":"Conceptual Representation of Medical Knowledge for Diagnosis by Computer: MDX and Related Systems.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/terms/bibliographicCitation":"http://dblp.uni-trier.de/rec/bibtex/journals/ac/ChandrasekaranM83",
+         "http://purl.org/dc/elements/1.1/type":"http://purl.org/dc/dcmitype/Text",
+         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[
+            "http://swrc.ontoware.org/ontology#Article",
+            "http://xmlns.com/foaf/0.1/Document"
+         ],
+         "http://purl.org/dc/elements/1.1/title":"Conceptual Representation of Medical Knowledge for Diagnosis by Computer: MDX and Related Systems.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://xmlns.com/foaf/0.1/homepage":[
+            "http://dx.doi.org/10.1016/S0065-2458(08)60130-8",
+            "http://dx.doi.org/10.1016%2FS0065-2458%2808%2960130-8"
+         ],
+         "http://swrc.ontoware.org/ontology#volume":"22^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/elements/1.1/creator":[
+            "http://dblp.l3s.de/d2r/resource/authors/Sanjay_Mittal",
+            "http://dblp.l3s.de/d2r/resource/authors/B._Chandrasekaran"
+         ],
+         "http://swrc.ontoware.org/ontology#pages":"217-293^^http://www.w3.org/2001/XMLSchema#string"
+      },
+      "http://dblp.l3s.de/d2r/resource/publications/journals/ac/ChenC78":{
+         "agents":{
+            "http://dblp.l3s.de/d2r/resource/authors/Hsu_Chang":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://dblp.l3s.de/Authors/Hsu+Chang",
+                  "http://www.bibsonomy.org/uri/author/Hsu+Chang"
+               ],
+               "http://xmlns.com/foaf/0.1/name":"Hsu Chang",
+               "http://www.w3.org/2000/01/rdf-schema#label":"Hsu Chang",
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent"
+            },
+            "http://dblp.l3s.de/d2r/resource/authors/Tien_Chi_Chen":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://dblp.l3s.de/Authors/Tien+Chi+Chen",
+                  "http://www.bibsonomy.org/uri/author/Tien+Chi+Chen"
+               ],
+               "http://xmlns.com/foaf/0.1/name":"Tien Chi Chen",
+               "http://www.w3.org/2000/01/rdf-schema#label":"Tien Chi Chen",
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent"
+            }
+         },
+         "http://xmlns.com/foaf/0.1/maker":[
+            "http://dblp.l3s.de/d2r/resource/authors/Tien_Chi_Chen",
+            "http://dblp.l3s.de/d2r/resource/authors/Hsu_Chang"
+         ],
+         "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+            "http://dblp.uni-trier.de/db/journals/ac/ac17.html#ChenC78",
+            "http://dx.doi.org/10.1016/S0065-2458(08)60393-9"
+         ],
+         "http://swrc.ontoware.org/ontology#journal":"http://dblp.l3s.de/d2r/resource/journals/ac",
+         "http://www.w3.org/2002/07/owl#sameAs":[
+            "http://bibsonomy.org/uri/bibtexkey/journals/ac/ChenC78/dblp",
+            "http://dblp.rkbexplorer.com/id/journals/ac/ChenC78"
+         ],
+         "http://purl.org/dc/elements/1.1/identifier":[
+            "DBLP journals/ac/ChenC78^^http://www.w3.org/2001/XMLSchema#string",
+            "DOI 10.1016%2FS0065-2458%2808%2960393-9^^http://www.w3.org/2001/XMLSchema#string"
+         ],
+         "http://purl.org/dc/terms/issued":"1978^^http://www.w3.org/2001/XMLSchema#gYear",
+         "http://www.w3.org/2000/01/rdf-schema#label":"Magnetic Bubble Memory and Logic.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/terms/bibliographicCitation":"http://dblp.uni-trier.de/rec/bibtex/journals/ac/ChenC78",
+         "http://purl.org/dc/elements/1.1/type":"http://purl.org/dc/dcmitype/Text",
+         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[
+            "http://swrc.ontoware.org/ontology#Article",
+            "http://xmlns.com/foaf/0.1/Document"
+         ],
+         "http://purl.org/dc/elements/1.1/title":"Magnetic Bubble Memory and Logic.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://xmlns.com/foaf/0.1/homepage":[
+            "http://dx.doi.org/10.1016/S0065-2458(08)60393-9",
+            "http://dx.doi.org/10.1016%2FS0065-2458%2808%2960393-9"
+         ],
+         "http://swrc.ontoware.org/ontology#volume":"17^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/elements/1.1/creator":[
+            "http://dblp.l3s.de/d2r/resource/authors/Tien_Chi_Chen",
+            "http://dblp.l3s.de/d2r/resource/authors/Hsu_Chang"
+         ],
+         "http://swrc.ontoware.org/ontology#pages":"223-282^^http://www.w3.org/2001/XMLSchema#string"
+      },
+      "http://dblp.l3s.de/d2r/resource/publications/journals/ac/Dickson81":{
+         "agents":{
+            "http://dblp.l3s.de/d2r/resource/authors/Gary_W._Dickson":{
+               "http://www.w3.org/2000/01/rdf-schema#seeAlso":[
+                  "http://dblp.l3s.de/Authors/Gary+W.+Dickson",
+                  "http://www.bibsonomy.org/uri/author/Gary+W.+Dickson"
+               ],
+               "http://xmlns.com/foaf/0.1/name":"Gary W. Dickson",
+               "http://www.w3.org/2000/01/rdf-schema#label":"Gary W. Dickson",
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"http://xmlns.com/foaf/0.1/Agent"
+            }
+         },
+         "http://swrc.ontoware.org/ontology#journal":"http://dblp.l3s.de/d2r/resource/journals/ac",
+         "http://purl.org/dc/elements/1.1/identifier":[
+            "DOI 10.1016%2FS0065-2458%2808%2960494-5^^http://www.w3.org/2001/XMLSchema#string",
+            "DBLP journals/ac/Dickson81^^http://www.w3.org/2001/XMLSchema#string"
+         ],
+         "http://purl.org/dc/terms/issued":"1981^^http://www.w3.org/2001/XMLSchema#gYear",
+         "http://purl.org/dc/terms/bibliographicCitation":"http://dblp.uni-trier.de/rec/bibtex/journals/ac/Dickson81",
+         "http://purl.org/dc/elements/1.1/type":"http://purl.org/dc/dcmitype/Text",
+         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[
+            "http://swrc.ontoware.org/ontology#Article",
+            "http://xmlns.com/foaf/0.1/Document"
+         ],
+         "http://purl.org/dc/elements/1.1/title":"Management Information Systems: Evolution and Status.^^http://www.w3.org/2001/XMLSchema#string",
+         "http://swrc.ontoware.org/ontology#volume":"20^^http://www.w3.org/2001/XMLSchema#string",
+         "http://purl.org/dc/elements/1.1/creator":"http://dblp.l3s.de/d2r/resource/authors/Gary_W._Dickson",
+         "http://swrc.ontoware.org/ontology#pages":"1-37^^http://www.w3.org/2001/XMLSchema#string"
+      }
+   }
+}
