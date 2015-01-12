@@ -19,6 +19,7 @@ package eu.fbk.querytemplate;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -45,8 +46,12 @@ public class DefaultQueryExecutor implements QueryExecutor {
 
     @Override
     public ResultSet execSelect(String qry) {
-        QueryExecution qexec = QueryExecutionFactory.create(qry, model);
-        return qexec.execSelect();
+        try {
+            QueryExecution qexec = QueryExecutionFactory.create(qry, model);
+            return qexec.execSelect();
+        } catch (QueryParseException qpe) {
+            throw new IllegalStateException(String.format("Error while processing query: [%s]", qry));
+        }
     }
 
 }
