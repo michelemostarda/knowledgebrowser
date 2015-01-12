@@ -31,18 +31,14 @@ public class DefaultQuery implements Query {
 
     private final String template;
     private final String[] inVariables;
-    private final String[] outBindings;
 
-    public DefaultQuery(String template, String[] inVariables, String[] outBindings) {
+    public DefaultQuery(String template, String[] inVariables) {
+        if(inVariables == null) throw new IllegalArgumentException("input vars array cannot be null.");
         for(String v : inVariables) {
             checkVarExists(v, template);
         }
-        for(String b : outBindings) {
-            checkBindingExists(b, template);
-        }
         this.template = template;
         this.inVariables = inVariables;
-        this.outBindings = outBindings;
     }
 
     @Override
@@ -56,13 +52,9 @@ public class DefaultQuery implements Query {
     }
 
     @Override
-    public String[] getOutBindings() {
-        return outBindings;
-    }
-
-    @Override
     public String expand(String... args) {
-        if (inVariables.length != args.length) throw new IllegalArgumentException();
+        if (inVariables.length != args.length)
+            throw new IllegalArgumentException("Unexpected number of arguments.");
         String out = template;
         for (int i = 0; i < inVariables.length; i++) {
             out = out.replace("$" + inVariables[i], args[i]);
@@ -79,7 +71,7 @@ public class DefaultQuery implements Query {
 
     @Override
     public String toString() {
-        return String.format("%s in: %s out: %s", template, Arrays.toString(inVariables), Arrays.toString(outBindings));
+        return String.format("%s in: %s", template, Arrays.toString(inVariables));
     }
 
     //TODO: replacement causes not matching URIs, replace with escaping.
@@ -100,9 +92,4 @@ public class DefaultQuery implements Query {
             throw new IllegalArgumentException(String.format("Variable '%s' not found in template '%s'", t, template));
     }
 
-    private void checkBindingExists(String b, String template) {
-        final String t = String.format("?%s", b);
-        if(!template.contains(t))
-            throw new IllegalArgumentException(String.format("Binding '%s' not found in template '%s'", t, template));
-    }
 }
