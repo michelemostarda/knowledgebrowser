@@ -32,6 +32,9 @@ public class DefaultNestedQuery implements NestedQuery {
     private final Stack<String> lastPivotValue = new Stack<>();
 
     void addQuery(String name, Query query, String pivot) {
+        if(name == null || name.trim().length() == 0) throw new IllegalArgumentException("Invalid name.");
+        if(query == null) throw new IllegalArgumentException("Invalid query.");
+        if(pivot == null || pivot.trim().length() == 0) throw new IllegalArgumentException("Invalid pivot.");
         queryNames.add(name);
         levels.add(query);
         pivots.add(pivot);
