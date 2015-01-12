@@ -23,11 +23,15 @@ import org.codehaus.jackson.JsonGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -35,17 +39,17 @@ import java.io.PrintWriter;
 public class DefaultNestedQueryTest {
 
     @Test
-    public void processQueryWithPrinterCollector() throws IOException {
+    public void processQueryPrintResult() throws IOException {
         PrintWriter pw = new PrintWriter(System.out);
-        processQuery( new PrintResultCollector(pw) );
+        processQuery( new PrintResultCollector(pw), 100);
     }
 
     @Test
-    public void processQueryWithJSONCollector() throws IOException {
+    public void processQueryJSON() throws IOException {
         final JsonFactory factory = new JsonFactory();
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final JsonGenerator generator = factory.createJsonGenerator(new OutputStreamWriter(baos));
-        processQuery(new JSONResultCollector(generator, "p:o"));
+        processQuery(new JSONResultCollector(generator, "p:o"), 100);
         generator.flush();
 
         Assert.assertEquals(
@@ -54,14 +58,24 @@ public class DefaultNestedQueryTest {
         );
     }
 
+    // process time: 5m 5s  out file: 200MB out.json.gz
+    @Test
+    public void processQueryJSONFull() throws IOException {
+        final JsonFactory factory = new JsonFactory();
+        final OutputStream os = new GZIPOutputStream(new BufferedOutputStream((new FileOutputStream(new File("out.json.gz")))));
+        final JsonGenerator generator = factory.createJsonGenerator(os);
+        processQuery(new JSONResultCollector(generator, "p:o"), null);
+        generator.flush();
+        os.close();
+    }
 
-    private void processQuery(ResultCollector collector) throws IOException {
+    private void processQuery(ResultCollector collector, Integer limit) throws IOException {
         final DefaultNestedQuery nestedQuery = new DefaultNestedQuery();
         nestedQuery.addQuery(
                 "articles",
                 new DefaultQuery(
-                        "SELECT * {?Article a <$Type>. ?Article ?p ?o } LIMIT 100"
-                        , new String[]{"Type"}, new String[]{"Article", "p", "o"}
+                        String.format("SELECT * {?Article a <$Type>. ?Article ?p ?o } %s", limit == null ? "" : "LIMIT " + limit),
+                        new String[]{"Type"}, new String[]{"Article", "p", "o"}
                 ),
                 "Article"
         );
