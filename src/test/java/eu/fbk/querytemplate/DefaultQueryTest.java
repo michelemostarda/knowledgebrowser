@@ -34,7 +34,7 @@ public class DefaultQueryTest {
 
     @Test
     public void testQuery() throws IOException {
-        final DefaultQuery query = new DefaultQuery("SELECT ?i {?i a <$Type>}", new String[]{"Type"}, new String[]{"i"});
+        final DefaultQuery query = new DefaultQuery("SELECT ?i {?i a <$Type>}", new String[]{"Type"});
         Assert.assertEquals("SELECT ?i {?i a <http://xmlns.com/foaf/0.1/Agent>}", query.expand("http://xmlns.com/foaf/0.1/Agent"));
         final DefaultQueryExecutor executor = getExecutor();
         final Result result = query.perform(executor, "http://xmlns.com/foaf/0.1/Agent");

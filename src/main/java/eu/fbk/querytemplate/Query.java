@@ -26,8 +26,6 @@ public interface Query {
 
     String[] getInVariables();
 
-    String[] getOutBindings();
-
     String expand(String... args);
 
     Result perform(QueryExecutor executor, String[] args);
