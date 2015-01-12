@@ -96,7 +96,7 @@ public class DefaultNestedQuery implements NestedQuery {
             }
             collector.collect(bindings, values);
         }
-        lastPivotValue.pop();
+        if(lastPivotValue.size() > level) lastPivotValue.pop();
         collector.endLevel(level);
     }
 
