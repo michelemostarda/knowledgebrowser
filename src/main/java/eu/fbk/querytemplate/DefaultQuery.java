@@ -18,6 +18,7 @@
 package eu.fbk.querytemplate;
 
 import com.hp.hpl.jena.query.ResultSet;
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 
@@ -25,6 +26,8 @@ import java.util.Arrays;
  * @author Michele Mostarda (mostarda@fbk.eu)
  */
 public class DefaultQuery implements Query {
+
+    private static final Logger logger = Logger.getLogger(DefaultQuery.class);
 
     private final String template;
     private final String[] inVariables;
@@ -69,6 +72,7 @@ public class DefaultQuery implements Query {
 
     @Override
     public Result perform(QueryExecutor executor, String... args) {
+        checkArgs(args);
         ResultSet rs = executor.execSelect(expand(args));
         return new DefaultResult(rs);
     }
@@ -76,6 +80,18 @@ public class DefaultQuery implements Query {
     @Override
     public String toString() {
         return String.format("%s in: %s out: %s", template, Arrays.toString(inVariables), Arrays.toString(outBindings));
+    }
+
+    //TODO: replacement causes not matching URIs, replace with escaping.
+    private void checkArgs(String[] args) {
+        String newArg;
+        for(int i = 0; i < args.length; i++) {
+            newArg = args[i].replace("{", "").replace("}", "").replace("<", "").replace(">", "").replace("|", "").replace(" ", "");
+            if(!args[i].equals(newArg)) {
+                logger.warn("Replaced " + args[i] + " with " + newArg);
+                args[i] = newArg;
+            }
+        }
     }
 
     private void checkVarExists(String v, String template) {
