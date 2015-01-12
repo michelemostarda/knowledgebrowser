@@ -22,7 +22,6 @@ import com.google.common.collect.SetMultimap;
 import org.codehaus.jackson.JsonGenerator;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Stack;
 
@@ -74,7 +73,6 @@ public class JSONResultCollector implements ResultCollector {
 
     @Override
     public void collect(String[] bindings, String[] values) {
-        System.out.println("BIN: " + Arrays.toString(bindings) +  "VALS: " + Arrays.toString(values));
         String k, v; k = v = null;
         for(int i = 0; i < bindings.length; i++) {
             if(fieldBinding.equals(bindings[i])) {
