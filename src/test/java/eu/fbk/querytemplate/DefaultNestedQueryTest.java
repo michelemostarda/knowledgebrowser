@@ -79,22 +79,23 @@ public class DefaultNestedQueryTest {
         final File jsonFile = new File("out1.json.gz");
         final OutputStream os = new GZIPOutputStream(new BufferedOutputStream((new FileOutputStream(jsonFile))));
         final JsonGenerator generator = factory.createJsonGenerator(os);
-        processArticleAgentQuery(new JSONResultCollector(generator, "p:o"), 2);
+        processArticleAgentQuery(new JSONResultCollector(generator, "p:o"), null);
         generator.flush();
         os.close();
-        Assert.assertTrue(jsonFile.length() >= 1024 * 1024 * 200);
+        Assert.assertTrue(jsonFile.length() >= 1024 * 1024 * 198);
     }
 
-    // process time: ?  out file: ? out2.json.gz
+    // process time: 1m  out file: 14MB out2.json.gz
     @Test
     public void testDocumentArticleAgentJSONFull() throws IOException {
         final JsonFactory factory = new JsonFactory();
         final File jsonFile = new File("out2.json.gz");
         final OutputStream os = new GZIPOutputStream(new BufferedOutputStream((new FileOutputStream(jsonFile))));
         final JsonGenerator generator = factory.createJsonGenerator(os);
-        processArticleAgentQuery(new JSONResultCollector(generator, "p:o"), 2);
+        processDocumentArticleAgentQuery(new JSONResultCollector(generator, "p:o"), null);
         generator.flush();
         os.close();
+        Assert.assertTrue(jsonFile.length() >= 1024 * 1024 * 14);
     }
 
     private void processArticleAgentQuery(ResultCollector collector, Integer limit) throws IOException {
