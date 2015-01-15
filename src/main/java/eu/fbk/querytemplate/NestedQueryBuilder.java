@@ -32,10 +32,10 @@ import java.io.InputStream;
 public class NestedQueryBuilder {
 
     NestedQuery build(JsonNode root) {
-        final JsonNode queries = root.get("queries");
-        if(!queries.isArray()) throw new IllegalArgumentException("queries field must be an array");
+        final JsonNode levels = root.get("levels");
+        if(!levels.isArray()) throw new IllegalArgumentException("Levels field must be an array");
         final DefaultNestedQuery defaultNestedQuery = new DefaultNestedQuery();
-        for(JsonNode queryNode : queries) {
+        for(JsonNode queryNode : levels) {
             defaultNestedQuery.addQuery(getName(queryNode), processQuery(queryNode), getPivot(queryNode));
         }
         return defaultNestedQuery;

@@ -1,5 +1,5 @@
 {
-  "queries": [
+  "levels": [
       {"name": "q1", "query": "SELECT ?s {?s a <$T>. ?s ?p ?o}", "pivot": "p1", "in_vars": ["T"]},
       {"name": "q2", "query": "SELECT ?o {<$S> ?p ?o", "pivot": "p2", "in_vars": ["S"]}
   ]
