@@ -58,12 +58,13 @@ public class DefaultNestedQueryTest {
         );
     }
 
+    //TODO: this is still invalid because just the first article per agent is taken.
     @Test
-    public void testDocumentArticleAgentJSONLimit() throws IOException {
+    public void testJournalArticleAgentJSONLimit() throws IOException {
         final JsonFactory factory = new JsonFactory();
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final JsonGenerator generator = factory.createJsonGenerator(new OutputStreamWriter(baos));
-        processDocumentArticleAgentQuery(new JSONResultCollector(generator, "p:o"), 10);
+        processJournalArticleAgentQuery(new JSONResultCollector(generator, "p:o"), 30);
         generator.flush();
 
         Assert.assertEquals(
@@ -87,12 +88,12 @@ public class DefaultNestedQueryTest {
 
     // process time: 1m  out file: 14MB out2.json.gz
     @Test
-    public void testDocumentArticleAgentJSONFull() throws IOException {
+    public void testJournalArticleAgentJSONFull() throws IOException {
         final JsonFactory factory = new JsonFactory();
         final File jsonFile = new File("out2.json.gz");
         final OutputStream os = new GZIPOutputStream(new BufferedOutputStream((new FileOutputStream(jsonFile))));
         final JsonGenerator generator = factory.createJsonGenerator(os);
-        processDocumentArticleAgentQuery(new JSONResultCollector(generator, "p:o"), null);
+        processJournalArticleAgentQuery(new JSONResultCollector(generator, "p:o"), null);
         generator.flush();
         os.close();
         Assert.assertTrue(jsonFile.length() >= 1024 * 1024 * 14);
@@ -125,15 +126,15 @@ public class DefaultNestedQueryTest {
         );
     }
 
-    private void processDocumentArticleAgentQuery(ResultCollector collector, Integer limit) throws IOException {
+    private void processJournalArticleAgentQuery(ResultCollector collector, Integer limit) throws IOException {
         final DefaultNestedQuery nestedQuery = new DefaultNestedQuery();
         nestedQuery.addQuery(
-                "documents",
+                "journals",
                 new DefaultQuery(
-                        String.format("SELECT * { ?Article <http://purl.org/dc/terms/references> ?Document } %s", limit == null ? "" : "LIMIT " + limit),
+                        String.format("SELECT ?Journal ?Article { ?Article <http://swrc.ontoware.org/ontology#journal> ?Journal } %s", limit == null ? "" : "LIMIT " + limit),
                         new String[]{}
                 ),
-                "Document"
+                "Journal"
         );
         nestedQuery.addQuery(
                 "articles",
