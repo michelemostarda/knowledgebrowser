@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -104,16 +105,14 @@ public class DefaultNestedQueryTest {
         nestedQuery.addQuery(
                 "articles",
                 new DefaultQuery(
-                        String.format("SELECT * {?Article a <$Type>. ?Article ?p ?o } %s", limit == null ? "" : "LIMIT " + limit),
-                        new String[]{"Type"}
+                        String.format("SELECT * {?Article a <$Type>. ?Article ?p ?o } %s", limit == null ? "" : "LIMIT " + limit)
                 ),
                 "Article"
         );
         nestedQuery.addQuery(
                 "agents",
                 new DefaultQuery(
-                        "SELECT * {?Agent a <http://xmlns.com/foaf/0.1/Agent>. <$Article> <http://purl.org/dc/elements/1.1/creator> ?Agent. ?Agent ?p ?o}",
-                        new String[]{"Article"}
+                        "SELECT * {?Agent a <http://xmlns.com/foaf/0.1/Agent>. <$Article> <http://purl.org/dc/elements/1.1/creator> ?Agent. ?Agent ?p ?o}"
                 ),
                 "Agent"
         );
@@ -122,7 +121,7 @@ public class DefaultNestedQueryTest {
         nestedQuery.executeNestedQuery(
                 executor,
                 collector,
-                "http://swrc.ontoware.org/ontology#Article"
+                new HashMap<String, String>(){{ put("Type", "http://swrc.ontoware.org/ontology#Article"); }}
         );
     }
 
@@ -131,24 +130,21 @@ public class DefaultNestedQueryTest {
         nestedQuery.addQuery(
                 "journals",
                 new DefaultQuery(
-                        String.format("SELECT ?Journal ?Article { ?Article <http://swrc.ontoware.org/ontology#journal> ?Journal } %s", limit == null ? "" : "LIMIT " + limit),
-                        new String[]{}
+                        String.format("SELECT ?Journal ?Article { ?Article <http://swrc.ontoware.org/ontology#journal> ?Journal } %s", limit == null ? "" : "LIMIT " + limit)
                 ),
                 "Journal"
         );
         nestedQuery.addQuery(
                 "articles",
                 new DefaultQuery(
-                        "SELECT (<$Article> as ?Article) ?p ?o WHERE {<$Article> ?p ?o }",
-                        new String[]{"Article"}
+                        "SELECT (<$Article> as ?Article) ?p ?o WHERE {<$Article> ?p ?o }"
                 ),
                 "Article"
         );
         nestedQuery.addQuery(
                 "agents",
                 new DefaultQuery(
-                        "SELECT * {?Agent a <http://xmlns.com/foaf/0.1/Agent>. <$Article> <http://purl.org/dc/elements/1.1/creator> ?Agent. ?Agent ?p ?o}",
-                        new String[]{"Article"}
+                        "SELECT * {?Agent a <http://xmlns.com/foaf/0.1/Agent>. <$Article> <http://purl.org/dc/elements/1.1/creator> ?Agent. ?Agent ?p ?o}"
                 ),
                 "Agent"
         );

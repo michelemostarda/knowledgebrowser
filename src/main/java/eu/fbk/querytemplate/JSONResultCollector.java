@@ -60,7 +60,7 @@ public class JSONResultCollector implements ResultCollector {
     }
 
     @Override
-    public void startLevel(int l, String queryName, String[] args) {
+    public void startLevel(int l, String queryName) {
         pivotOpen.push(false);
         try {
             flushMap();

@@ -18,7 +18,10 @@
 package eu.fbk.querytemplate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -66,16 +69,20 @@ public class DefaultNestedQuery implements NestedQuery {
     }
 
     @Override
-    public void executeNestedQuery(QueryExecutor executor, ResultCollector collector, String... args) {
+    public void executeNestedQuery(QueryExecutor executor, ResultCollector collector, Map<String,String> args) {
         lastPivotValue.clear();
         collector.begin();
         processNextLevel(0, args, executor, collector);
         collector.end();
     }
 
+    public void executeNestedQuery(QueryExecutor executor, ResultCollector collector) {
+       executeNestedQuery(executor, collector, Collections.<String,String>emptyMap());
+    }
+
     @Override
-    public void processNextLevel(final int level, String[] args, QueryExecutor executor, ResultCollector collector) {
-        collector.startLevel(level, getName(level), args);
+    public void processNextLevel(final int level, Map<String,String> args, QueryExecutor executor, ResultCollector collector) {
+        collector.startLevel(level, getName(level));
         final Result result = getQuery(level).perform(executor, args);
         final String[] bindings = result.getBindings();
         String[] values;
@@ -102,15 +109,15 @@ public class DefaultNestedQuery implements NestedQuery {
 
     private void processPivot(int level, String[] bindings, String[] values, QueryExecutor executor, ResultCollector collector) {
         if (!hasLevel(level)) return;
-        final Query nextQuery = getQuery(level);
-        final String[] nextArgs = bindArguments(bindings, values, nextQuery.getInVariables());
+        final Map<String,String> nextArgs = bindArguments(bindings, values);
         processNextLevel(level, nextArgs, executor, collector);
     }
 
-    private String[] bindArguments(String[] bindings, String[] values, String[] inVariables) {
-        String[] out = new String[inVariables.length];
-        for(int i = 0; i < inVariables.length; i++) {
-            out[i] = values[indexOf(bindings, inVariables[i])];
+    private Map<String,String> bindArguments(String[] bindings, String[] values) {
+        if(bindings.length != values.length) throw new IllegalArgumentException();
+        final Map<String,String> out = new HashMap<>();
+        for(int i = 0; i < bindings.length; i++) {
+            out.put(bindings[i], values[i]);
         }
         return out;
     }

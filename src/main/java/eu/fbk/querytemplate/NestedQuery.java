@@ -17,6 +17,8 @@
 
 package eu.fbk.querytemplate;
 
+import java.util.Map;
+
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
  */
@@ -32,8 +34,8 @@ public interface NestedQuery {
 
     String getPivot(int level);
 
-    void processNextLevel(int level, String[] args, QueryExecutor executor, ResultCollector collector);
+    void processNextLevel(int level, Map<String,String> args, QueryExecutor executor, ResultCollector collector);
 
-    void executeNestedQuery(QueryExecutor executor, ResultCollector collector, String... args);
+    void executeNestedQuery(QueryExecutor executor, ResultCollector collector, Map<String,String> args);
 
 }

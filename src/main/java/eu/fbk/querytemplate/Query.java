@@ -17,6 +17,8 @@
 
 package eu.fbk.querytemplate;
 
+import java.util.Map;
+
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
  */
@@ -24,10 +26,8 @@ public interface Query {
 
     String getTemplate();
 
-    String[] getInVariables();
+    String expand(Map<String,String> args);
 
-    String expand(String... args);
-
-    Result perform(QueryExecutor executor, String[] args);
+    Result perform(QueryExecutor executor, Map<String,String> args);
 
 }

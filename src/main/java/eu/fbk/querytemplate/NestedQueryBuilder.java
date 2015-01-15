@@ -57,8 +57,7 @@ public class NestedQueryBuilder {
 
     private Query processQuery(JsonNode queryNode) {
         final String template = queryNode.get("query").asText();
-        final String[] inVars = toStringArray(queryNode.get("in_vars"));
-        return new DefaultQuery(template, inVars);
+        return new DefaultQuery(template);
     }
 
     private String[] toStringArray(JsonNode list) {

@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Michele Mostarda (mostarda@fbk.eu)
@@ -34,10 +36,11 @@ public class DefaultQueryTest {
 
     @Test
     public void testQuery() throws IOException {
-        final DefaultQuery query = new DefaultQuery("SELECT ?i {?i a <$Type>}", new String[]{"Type"});
-        Assert.assertEquals("SELECT ?i {?i a <http://xmlns.com/foaf/0.1/Agent>}", query.expand("http://xmlns.com/foaf/0.1/Agent"));
+        final DefaultQuery query = new DefaultQuery("SELECT ?i {?i a <$Type>}");
+        final Map<String,String> args = new HashMap<String, String>(){{ put("Type", "http://xmlns.com/foaf/0.1/Agent"); }};
+        Assert.assertEquals("SELECT ?i {?i a <http://xmlns.com/foaf/0.1/Agent>}", query.expand(args));
         final DefaultQueryExecutor executor = getExecutor();
-        final Result result = query.perform(executor, "http://xmlns.com/foaf/0.1/Agent");
+        final Result result = query.perform(executor, args);
         int c = 0;
         while(result.next())  {
             Assert.assertNotNull(result.getBindings());
