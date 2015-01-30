@@ -57,6 +57,16 @@ public class PrintResultCollector implements ResultCollector {
     }
 
     @Override
+    public void startPropertyPivot(String property) {
+        pw.println("Start property pivot: " + property);
+    }
+
+    @Override
+    public void endPropertyPivot(String property) {
+        pw.println("End property pivot: " + property);
+    }
+
+    @Override
     public void endLevel(int l) {
         pw.println("End level " + l);
     }

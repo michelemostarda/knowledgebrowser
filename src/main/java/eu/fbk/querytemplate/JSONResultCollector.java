@@ -103,6 +103,25 @@ public class JSONResultCollector implements ResultCollector {
     }
 
     @Override
+    public void startPropertyPivot(String property) {
+        try {
+            generator.writeFieldName(property);
+            generator.writeStartObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void endPropertyPivot(String property) {
+        try {
+            generator.writeEndObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void endLevel(int l) {
         try {
             flushMap();

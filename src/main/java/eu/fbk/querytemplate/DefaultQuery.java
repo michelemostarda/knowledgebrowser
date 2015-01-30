@@ -20,7 +20,6 @@ package eu.fbk.querytemplate;
 import com.hp.hpl.jena.query.ResultSet;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -43,9 +42,12 @@ public class DefaultQuery implements Query {
 
     @Override
     public String expand(Map<String,String> args) {
-        String out = template;
+        String out = template, newout;
         for (Map.Entry<String,String> entry : args.entrySet()) {
-            out = out.replace("$" + entry.getKey(), entry.getValue());
+            newout = out.replace("$" + entry.getKey(), entry.getValue());
+            if(out.equals(newout))
+                throw new IllegalArgumentException("Cannot find expansion for variable " + entry.getKey());
+            out = newout;
         }
         return out;
     }

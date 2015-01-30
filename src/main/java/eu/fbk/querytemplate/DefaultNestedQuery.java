@@ -18,6 +18,7 @@
 package eu.fbk.querytemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,15 +33,21 @@ public class DefaultNestedQuery implements NestedQuery {
     private final List<String> queryNames = new ArrayList<>();
     private final List<Query> levels = new ArrayList<>();
     private final List<String> pivots = new ArrayList<>();
+    private final List<PropertyPivot> propertyPivots = new ArrayList<>();
     private final Stack<String> lastPivotValue = new Stack<>();
 
-    void addQuery(String name, Query query, String pivot) {
+    void addQuery(String name, Query query, String pivot, PropertyPivot propertyPivot) {
         if(name == null || name.trim().length() == 0) throw new IllegalArgumentException("Invalid name.");
         if(query == null) throw new IllegalArgumentException("Invalid query.");
         if(pivot == null || pivot.trim().length() == 0) throw new IllegalArgumentException("Invalid pivot.");
         queryNames.add(name);
         levels.add(query);
         pivots.add(pivot);
+        propertyPivots.add(propertyPivot);
+    }
+
+    void addQuery(String name, Query query, String pivot) {
+        addQuery(name, query, pivot, null);
     }
 
     @Override
@@ -69,6 +76,11 @@ public class DefaultNestedQuery implements NestedQuery {
     }
 
     @Override
+    public PropertyPivot getPropertyPivot(int level) {
+        return propertyPivots.get(level);
+    }
+
+    @Override
     public void executeNestedQuery(QueryExecutor executor, ResultCollector collector, Map<String,String> args) {
         lastPivotValue.clear();
         collector.begin();
@@ -77,16 +89,24 @@ public class DefaultNestedQuery implements NestedQuery {
     }
 
     public void executeNestedQuery(QueryExecutor executor, ResultCollector collector) {
-       executeNestedQuery(executor, collector, Collections.<String,String>emptyMap());
+       executeNestedQuery(executor, collector, Collections.<String, String>emptyMap());
     }
 
     @Override
     public void processNextLevel(final int level, Map<String,String> args, QueryExecutor executor, ResultCollector collector) {
+        final Result result;
+        try {
+            result = getQuery(level).perform(executor, args);
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            return;
+        }
+
         collector.startLevel(level, getName(level));
-        final Result result = getQuery(level).perform(executor, args);
         final String[] bindings = result.getBindings();
         String[] values;
         final String pivot = getPivot(level);
+        final PropertyPivot propertyPivot = getPropertyPivot(level);
         for(;result.next();) {
             values = result.getValues();
             collector.values(values);
@@ -100,6 +120,19 @@ public class DefaultNestedQuery implements NestedQuery {
                 lastPivotValue.push(pivotValue);
                 collector.pivot(pivotValue);
                 processPivot(level + 1, bindings, values, executor, collector);
+            }
+            //TODO: pivot e property pivot must coordinate
+            if(propertyPivot != null) {
+                final String propertyPivotValue = getValue(bindings, values, propertyPivot.p);
+                if(propertyPivot.v.equals(propertyPivotValue)) {
+                    collector.startPropertyPivot(propertyPivotValue);
+                    final String[] newBindings = Arrays.copyOf(bindings, bindings.length + 1);
+                    final String[] newValues = Arrays.copyOf(values, values.length + 1);
+                    newBindings[newBindings.length - 1] = propertyPivot.remap;
+                    newValues[newValues.length - 1] = getValue(bindings, values, propertyPivot.remapKey);
+                    processPivot(level + 1, newBindings, newValues, executor, collector);
+                    collector.endPropertyPivot(propertyPivotValue);
+                }
             }
             collector.collect(bindings, values);
         }

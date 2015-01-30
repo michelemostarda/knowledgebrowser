@@ -32,6 +32,10 @@ public interface ResultCollector {
 
     void pivot(String name);
 
+    void startPropertyPivot(String property);
+
+    void endPropertyPivot(String property);
+
     void endLevel(int l);
 
     void end();

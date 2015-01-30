@@ -65,13 +65,19 @@ public class DefaultNestedQueryTest {
         final JsonFactory factory = new JsonFactory();
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final JsonGenerator generator = factory.createJsonGenerator(new OutputStreamWriter(baos));
-        processJournalArticleAgentQuery(new JSONResultCollector(generator, "p:o"), 30);
+        processJournalArticleAgentQuery(new JSONResultCollector(generator, "p:o"), 15);
         generator.flush();
 
         Assert.assertEquals(
                 JSONUtils.parseJSON(this.getClass().getResourceAsStream("nested-query2-result.json")),
                 JSONUtils.parseJSON(baos.toString())
         );
+    }
+
+    @Test
+    public void testJournalArticleAgentSysOut() throws IOException {
+        PrintWriter pw = new PrintWriter(System.out);
+        processJournalArticleAgentQuery(new PrintResultCollector(pw), 15);
     }
 
     // process time: 5m 5s  out file: 200MB out1.json.gz
@@ -130,9 +136,11 @@ public class DefaultNestedQueryTest {
         nestedQuery.addQuery(
                 "journals",
                 new DefaultQuery(
-                        String.format("SELECT ?Journal ?Article { ?Article <http://swrc.ontoware.org/ontology#journal> ?Journal } %s", limit == null ? "" : "LIMIT " + limit)
+                        //String.format("SELECT ?Journal ?Article { ?Article <http://swrc.ontoware.org/ontology#journal> ?Journal } %s", limit == null ? "" : "LIMIT " + limit)
+                        String.format("SELECT ?Journal ?p ?o {?Journal a <http://swrc.ontoware.org/ontology#Journal>. ?o ?p ?Journal } ORDER BY ?Journal %s", limit == null ? "" : "LIMIT " + limit)
                 ),
-                "Journal"
+                "Journal",
+                new PropertyPivot("p", "http://swrc.ontoware.org/ontology#journal", "o", "Article")
         );
         nestedQuery.addQuery(
                 "articles",

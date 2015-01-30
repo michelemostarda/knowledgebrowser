@@ -17,27 +17,21 @@
 
 package eu.fbk.querytemplate;
 
-import java.util.Map;
-
 /**
- * @author Michele Mostarda (mostarda@fbk.eu)
+ * @author Michele Mostarda (me@michelemostarda.it)
  */
-public interface NestedQuery {
+class PropertyPivot {
 
-    int getLevels();
+    final String p;
+    final String v;
+    final String remapKey;
+    final String remap;
 
-    boolean hasLevel(int level);
-
-    String getName(int level);
-
-    Query getQuery(int level);
-
-    String getPivot(int level);
-
-    PropertyPivot getPropertyPivot(int level);
-
-    void processNextLevel(int level, Map<String,String> args, QueryExecutor executor, ResultCollector collector);
-
-    void executeNestedQuery(QueryExecutor executor, ResultCollector collector, Map<String,String> args);
+    public PropertyPivot(String p, String v, String remapKey, String remap) {
+        this.p = p;
+        this.v = v;
+        this.remapKey = remapKey;
+        this.remap = remap;
+    }
 
 }
