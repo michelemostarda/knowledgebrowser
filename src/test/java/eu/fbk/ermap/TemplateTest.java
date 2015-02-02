@@ -18,6 +18,7 @@
 package eu.fbk.ermap;
 
 import eu.fbk.JSONUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
@@ -45,7 +46,22 @@ public class TemplateTest {
                 "}";
         final Template template = new Template(JSONUtils.parseJSON(JSON));
         final List<Template.Operation> operations = template.getOperations();
-        System.out.println(operations);
+        Assert.assertEquals(
+                "[" +
+                        "Open Object [News], " +
+                            "Expand element KVs [News], " +
+                            "Open Object [NC], " +
+                            "Expand element KVs [NC], " +
+                                "Open Object [CeP], " +
+                                "Expand element KVs [CeP], " +
+                                "Close Object [CeP], " +
+                                "Open Object [CiP], " +
+                                "Expand element KVs [CiP], " +
+                                "Close Object [CiP], " +
+                            "Close Object [NC], " +
+                        "Close Object [News]]",
+                operations.toString()
+        );
     }
 
 }

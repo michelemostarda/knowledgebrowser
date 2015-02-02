@@ -56,23 +56,18 @@ public class Template {
             entry = rIter.next();
             if(entry.getValue().isNull()) {
                 operations.add(new ExpandElementOperation(context.peek(), entry.getKey()));
-                continue;
-            }
-            context.push(entry.getKey());
-
-            if(entry.getValue().isArray()) {
-                operations.add(new OpenArrayOperation(context.peek()));
-                getOperations(entry.getValue(), context, operations);
-                operations.add(new CloseArrayOperation(context.peek()));
-            } else if(entry.getValue().isObject()) {
-                operations.add(new OpenObjectOperation(context.peek()));
-                Iterator<Map.Entry<String,JsonNode>> iter = entry.getValue().getFields();
-                while (iter.hasNext()) {
-                    getOperations(iter.next().getValue(), context, operations);
-                }
-                operations.add(new CloseObjectOperation(context.peek()));
             } else {
-                throw new IllegalStateException();
+                context.push(entry.getKey());
+                if (entry.getValue().isObject()) {
+                    operations.add(new OpenObjectOperation(context.peek()));
+                    getOperations(entry.getValue(), context, operations);
+                    operations.add(new CloseObjectOperation(context.peek()));
+                } else if (entry.getValue().isArray()) {
+                    throw new UnsupportedOperationException();
+                } else {
+                    throw new IllegalStateException();
+                }
+                context.pop();
             }
         }
     }
@@ -99,6 +94,10 @@ public class Template {
                 throw new RuntimeException(e);
             }
         }
+        @Override
+        public String toString() {
+            return String.format("Open Array [%s]", getContext());
+        }
     }
 
     static class CloseArrayOperation implements Operation {
@@ -117,6 +116,10 @@ public class Template {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+        @Override
+        public String toString() {
+            return String.format("Close Array [%s]", getContext());
         }
     }
 
@@ -137,6 +140,10 @@ public class Template {
                 throw new RuntimeException(e);
             }
         }
+        @Override
+        public String toString() {
+            return String.format("Open Object [%s]", getContext());
+        }
     }
 
     static class CloseObjectOperation implements Operation {
@@ -155,6 +162,10 @@ public class Template {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+        @Override
+        public String toString() {
+            return String.format("Close Object [%s]", getContext());
         }
     }
 
@@ -175,6 +186,10 @@ public class Template {
         @Override
         public void apply(JsonGenerator generator) {
             // None
+        }
+        @Override
+        public String toString() {
+            return String.format("Expand element %s [%s]", getElement(), getContext());
         }
     }
 
